@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -16,7 +15,7 @@ export default function HomePage() {
     }
   }, []);
 
-  return <div>Loading...</div>; // Optional loading message
+  return <div></div>; // Optional loading message
 }
 
 // Dummy authentication check function (Replace with real logic)
