@@ -1,0 +1,33 @@
+/my-dashboard
+│── /public                # Static assets (images, icons, etc.)
+│── /src
+│   ├── /app               # Next.js App Router (v15)
+│   │   ├── /(auth)        # Authentication pages group
+│   │   │   ├── /login     # Login page
+│   │   │   │   ├── page.tsx
+│   │   │   ├── /signup    # Signup page
+│   │   │   │   ├── page.tsx
+│   │   ├── /dashboard     # Main dashboard
+│   │   │   ├── page.tsx
+│   │   ├── /product       # Product page
+│   │   │   ├── page.tsx
+│   │   ├── /account       # Account settings page
+│   │   │   ├── page.tsx
+│   │   ├── layout.tsx     # Root layout (includes sidebar, navbar, etc.)
+│   │   ├── page.tsx       # Default homepage (redirects to login or dashboard)
+│   ├── /components        # Reusable components
+│   │   ├── Navbar.tsx
+│   │   ├── Sidebar.tsx
+│   │   ├── Button.tsx
+│   ├── /lib               # Utility functions, API calls, helpers
+│   ├── /hooks             # Custom React hooks
+│   ├── /context           # Context providers (auth, theme, etc.)
+│   ├── /styles            # Global styles and Tailwind CSS config
+│   ├── /config            # Configuration files (env, constants, etc.)
+│── /pages                 # (For API routes if using Pages Router for APIs)
+│── /public                # Static assets
+│── /next.config.js        # Next.js config file
+│── /tailwind.config.js    # Tailwind CSS config
+│── /tsconfig.json         # TypeScript config
+│── /package.json          # Dependencies and scripts
+│── /README.md             # Project documentation

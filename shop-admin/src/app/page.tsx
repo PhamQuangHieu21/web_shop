@@ -22,5 +22,5 @@ export default function HomePage() {
 // Dummy authentication check function (Replace with real logic)
 function checkAuth() {
   if (typeof window === "undefined") return false; // Ensure it's client-side
-  return localStorage.getItem("token") !== null; // Example: Check for token
+  return sessionStorage.getItem("token") !== null; // Example: Check for token
 }

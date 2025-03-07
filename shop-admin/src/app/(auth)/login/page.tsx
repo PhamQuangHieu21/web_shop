@@ -35,7 +35,7 @@ export default function LoginPage() {
   });
 
   function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    localStorage.setItem("token", "");
+    sessionStorage.setItem("token", "");
     router.push("/dashboard");
   }
 
