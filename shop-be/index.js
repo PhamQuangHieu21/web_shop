@@ -1,7 +1,7 @@
 import express from "express";
 import { existsSync, mkdirSync } from "fs";
-import { PORT, SERVER_URL } from "./src/utils/constant.js";
-import connection from "./src/config/database.js";
+import { PORT, SERVER_URL } from "./src/utils/constants.js";
+import routes from "./src/routes/index.js"
 
 // express
 const app = express();
@@ -10,9 +10,7 @@ const app = express();
 app.use(express.json({ limit: "100mb" }));
 app.use(express.static("STATIC"));
 // routes
-app.get('/', (req, res) => {
-    res.send('hello');
-});
+app.use("/", routes);
 
 // STATIC
 if (!existsSync("STATIC")) mkdirSync("STATIC");

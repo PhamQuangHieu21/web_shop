@@ -1,9 +1,9 @@
 import mysql from "mysql2/promise";
 
-const connection = mysql.createPool({
+const pool = mysql.createPool({
     host: "127.0.0.1",
-    port: 3306, // default port 3306
-    user: "root", // default user is empty
+    port: 3306,
+    user: "root",
     database: "shop",
     password: "nigma1357",
     charset: "utf8mb4",
@@ -13,8 +13,8 @@ const connection = mysql.createPool({
     try {
         console.log("Connect to MySQL successfully");
     } catch (err) {
-        console.error("Error connecting to MySQL: ", err);
+        console.error("Error when connecting to MySQL: ", err);
     }
 })();
 
-export default connection;
+export default pool;
