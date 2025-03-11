@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  ChartBarStacked,
   ReceiptText,
   Settings2,
   Shirt,
@@ -35,6 +36,11 @@ const data = {
       title: "Sản phẩm",
       url: "/dashboard/product",
       icon: Shirt,
+    },
+    {
+      title: "Danh mục",
+      url: "/dashboard/category",
+      icon: ChartBarStacked,
     },
     {
       title: "Đơn hàng",
