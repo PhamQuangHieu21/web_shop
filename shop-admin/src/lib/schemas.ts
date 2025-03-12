@@ -36,3 +36,12 @@ export const loginFormSchema = z.object({
     .min(1, { message: "Mật khẩu phải có độ dài từ 1 đến 15 ký tự" })
     .max(15, { message: "Mật khẩu phải có độ dài từ 1 đến 15 ký tự" }),
 });
+
+export const editProductFormSchema = z.object({
+  product_name: z.string().min(1, "Nhập tên sản phẩm."),
+  description: z.string().optional(),
+  price: z.number().positive("Giá sản phẩm không hợp lệ."),
+  quantity: z.number().int().nonnegative("Số lượng sản phẩm không hợp lệ."),
+  category: z.string().min(1, "Chọn danh mục sản phẩm."),
+  img: z.instanceof(File, { message: "Chọn ít nhất một ảnh sản phẩm" }),
+});

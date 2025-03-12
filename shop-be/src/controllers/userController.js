@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { RES_MESSAGES } from "../utils/constants.js";
-import { auth, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, updatePassword } from "../../firebase.js";
+import { auth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "../../firebase.js";
 import { firebaseAuthErrorHandler, isValidRole } from "../utils/validator.js";
 import pool from "../config/database.js";
 
@@ -37,6 +37,7 @@ export const register = async (req, res) => {
         await sendEmailVerification(auth.currentUser);
 
         const hashedPassword = await bcrypt.hash(user.password, 12);
+        console.log(hashedPassword);
         await pool.query(
             "INSERT INTO `user` (full_name, email, password, phone_number, address, role) VALUES (?, ?, ?, ?, ?, ?)",
             [user.full_name, user.email, hashedPassword, user.phone_number, user.address, user.role]
@@ -66,7 +67,7 @@ export const login = async (req, res) => {
                 data: "",
             });
         }
-        const isPasswordCorrect = await bcrypt.compare(existingUser[0].password, user.password);
+        const isPasswordCorrect = await bcrypt.compare(user.password, existingUser[0].password);
         if (!isPasswordCorrect)
             return res.status(401).send({
                 message: RES_MESSAGES.WRONG_USERNAME_PASSWORD,
@@ -76,10 +77,13 @@ export const login = async (req, res) => {
         // Login
         await signInWithEmailAndPassword(auth, user.email, user.password);
 
-        if (auth.currentUser && auth.currentUser.emailVerified) res.status(200).json({
-            message: "Login successfully",
-            data: existingUser[0],
-        });
+        if (auth.currentUser && auth.currentUser.emailVerified) {
+            delete existingUser[0].password;
+            res.status(200).json({
+                message: "Login successfully",
+                data: existingUser[0],
+            });
+        }
         else res.status(401).send({
             message: RES_MESSAGES.UNVERIFIED_ACCOUNT,
             data: "",

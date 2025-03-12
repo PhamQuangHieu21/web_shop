@@ -1,13 +1,13 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "./data-table-column-header";
+import { DataTableColumnHeader } from "../common/data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { Checkbox } from "@/components/ui/checkbox";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Category = {
-  id: string;
+  category_id: string;
   name: string;
 };
 
@@ -35,13 +35,13 @@ export const columns: ColumnDef<Category>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
+    accessorKey: "category_id",
     header: ({ column }) => <DataTableColumnHeader column={column} title="#" />,
   },
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Tên" />
     ),
   },
   {

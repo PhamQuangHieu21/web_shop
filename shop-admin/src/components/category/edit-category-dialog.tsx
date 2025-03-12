@@ -63,7 +63,7 @@ const EditCategoryDialog = ({
               setLoading(true);
               setTimeout(() => {
                 setData((prev) => [
-                  { id: Date.now().toString(), name: name },
+                  { category_id: Date.now().toString(), name: name },
                   ...prev,
                 ]);
                 setLoading(false);
