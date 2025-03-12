@@ -16,12 +16,17 @@ import { Loader2, Plus } from "lucide-react";
 import { Category } from "./columns";
 import { toast } from "sonner";
 
-interface AddCategoryDialogProps {
+interface EditCategoryDialogProps {
   setData: React.Dispatch<React.SetStateAction<Category[]>>;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AddCategoryDialog = ({ setData }: AddCategoryDialogProps) => {
-  const [open, setOpen] = useState<boolean>(false);
+const EditCategoryDialog = ({
+  setData,
+  open,
+  setOpen,
+}: EditCategoryDialogProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   return (
@@ -77,4 +82,4 @@ const AddCategoryDialog = ({ setData }: AddCategoryDialogProps) => {
   );
 };
 
-export default AddCategoryDialog;
+export default EditCategoryDialog;

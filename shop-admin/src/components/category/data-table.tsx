@@ -2,10 +2,12 @@
 
 import {
   ColumnDef,
+  SortingState,
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  getSortedRowModel,
 } from "@tanstack/react-table";
 
 import {
@@ -17,21 +19,35 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTablePagination } from "./data-table-pagination";
+import { useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  loading: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  loading,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      rowSelection,
+    },
   });
 
   return (
@@ -57,7 +73,15 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {loading ? (
+              <TableRow>
+                {columns.map((_, i) => (
+                  <TableCell key={i} className="h-24 text-center">
+                    <Skeleton className="w-full h-[40px] rounded-sm" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -79,7 +103,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Không có dữ liệu
                 </TableCell>
               </TableRow>
             )}

@@ -1,5 +1,5 @@
 "use client";
-import AddCategoryDialog from "@/components/category/add-category-dialog";
+import EditCategoryDialog from "@/components/category/edit-category-dialog";
 import CategoryToolbar from "@/components/category/category-toolbar";
 import { Category, columns } from "@/components/category/columns";
 import { DataTable } from "@/components/category/data-table";
@@ -14,11 +14,16 @@ async function getData(): Promise<Category[]> {
 
 export default function CategoryPage() {
   const [data, setData] = useState<Category[]>([]);
+  const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
       const temp = await getData();
-      setData(temp);
+      setTimeout(() => {
+        setData(temp);
+        setLoading(false);
+      }, 1500);
     };
 
     fetchData();
@@ -28,10 +33,14 @@ export default function CategoryPage() {
     <main className="container mx-auto sm:px-10">
       <div className="flex justify-between items-end mb-7">
         <p className="text-2xl">Danh mục sản phẩm</p>
-        <AddCategoryDialog setData={setData} />
+        <EditCategoryDialog
+          setData={setData}
+          open={openEditDialog}
+          setOpen={setOpenEditDialog}
+        />
       </div>
       <CategoryToolbar />
-      <DataTable columns={columns} data={data} />
+      <DataTable loading={loading} columns={columns} data={data} />
     </main>
   );
 }
