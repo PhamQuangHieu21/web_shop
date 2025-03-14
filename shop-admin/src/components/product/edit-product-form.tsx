@@ -31,12 +31,12 @@ const EditProductForm = () => {
       price: 0,
       quantity: 0,
       category: "",
-      img: undefined,
+      images: [],
     },
   });
 
   function onSubmit(values: z.infer<typeof editProductFormSchema>) {
-    sessionStorage.setItem("token", "");
+    console.log(values);
   }
 
   return (
@@ -121,6 +121,27 @@ const EditProductForm = () => {
                   <SelectItem value="m@support.com">m@support.com</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* Image Upload */}
+        <FormField
+          control={form.control}
+          name="images"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Số lượng</FormLabel>
+              <FormControl>
+                <Input
+                  accept=".jpg, .jpeg, .png, .webp"
+                  type="file"
+                  multiple
+                  onChange={(e) =>
+                    field.onChange(e.target.files ? e.target.files : null)
+                  }
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

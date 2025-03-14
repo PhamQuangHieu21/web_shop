@@ -37,11 +37,38 @@ export const loginFormSchema = z.object({
     .max(15, { message: "Mật khẩu phải có độ dài từ 1 đến 15 ký tự" }),
 });
 
+export const editCategoryFormSchema = z.object({
+  name: z.string().min(1, { message: "Tên danh mục không được để trống." }),
+  icon: z.string().min(1, { message: "Nhập biểu tượng cho danh mục." }),
+});
+
 export const editProductFormSchema = z.object({
   product_name: z.string().min(1, "Nhập tên sản phẩm."),
   description: z.string().optional(),
-  price: z.number().positive("Giá sản phẩm không hợp lệ."),
-  quantity: z.number().int().nonnegative("Số lượng sản phẩm không hợp lệ."),
+  price: z.coerce.number().positive("Giá sản phẩm không hợp lệ."),
+  quantity: z.coerce
+    .number()
+    .int()
+    .nonnegative("Số lượng sản phẩm không hợp lệ."),
   category: z.string().min(1, "Chọn danh mục sản phẩm."),
-  img: z.instanceof(File, { message: "Chọn ít nhất một ảnh sản phẩm" }),
+  images: z
+    .any()
+    // To not allow empty files
+    .refine((files) => files?.length >= 1, {
+      message: "Nhập ít nhất một ảnh sản phẩm.",
+    })
+    // To not allow files other than images
+    .refine(
+      (files) =>
+        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+          files?.[0]?.type
+        ),
+      {
+        message: "Các định dạng ảnh hợp lệ: .jpg, .jpeg, .png, .webp",
+      }
+    )
+    // To not allow files larger than 10MB
+    .refine((files) => files?.[0]?.size <= 10000000, {
+      message: "Kích thước ảnh tối đa là 10MB",
+    }),
 });

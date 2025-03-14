@@ -1,31 +1,35 @@
 "use client";
 import EditCategoryDialog from "@/components/category/edit-category-dialog";
-import { Category, columns } from "@/components/category/columns";
+import { columns } from "@/components/category/columns";
 import { DataTable } from "@/components/category/data-table";
 import { useEffect, useState } from "react";
-
-async function getData(): Promise<Category[]> {
-  return Array.from({ length: 1000 }, (_, i) => ({
-    category_id: `${i + 1}`,
-    name: `Quần ${i + 1}`,
-  }));
-}
+import { apiRequest } from "@/lib/utils";
+import { Category } from "@/lib/types";
+import { toast } from "sonner";
 
 export default function CategoryPage() {
   const [data, setData] = useState<Category[]>([]);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>();
+
+  const onCloseEditDialog = () => {
+    setSelectedCategory(null);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const temp = await getData();
-      setTimeout(() => {
-        setData(temp);
+    async function fetchCategories() {
+      try {
+        const categories = await apiRequest<Category>("/category/list", "GET");
+        setData(categories as Category[]);
         setLoading(false);
-      }, 1500);
-    };
+      } catch (error) {
+        setLoading(false);
+        toast.error("Đã xảy ra lỗi khi lấy danh sách danh mục sản phẩm.");
+      }
+    }
 
-    fetchData();
+    fetchCategories();
   }, []);
 
   return (
@@ -36,9 +40,15 @@ export default function CategoryPage() {
           setData={setData}
           open={openEditDialog}
           setOpen={setOpenEditDialog}
+          selectedCategory={selectedCategory}
+          onCloseEditDialog={onCloseEditDialog}
         />
       </div>
-      <DataTable loading={loading} columns={columns} data={data} />
+      <DataTable
+        loading={loading}
+        columns={columns(setOpenEditDialog, setSelectedCategory, setData)}
+        data={data}
+      />
     </main>
   );
 }

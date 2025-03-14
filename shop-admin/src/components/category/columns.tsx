@@ -2,38 +2,15 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../common/data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Category } from "@/lib/types";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Category = {
-  category_id: string;
-  name: string;
-};
-
-export const columns: ColumnDef<Category>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+export const columns = (
+  setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>>,
+  setSelectedCategory: React.Dispatch<
+    React.SetStateAction<Category | null | undefined>
+  >,
+  setData: React.Dispatch<React.SetStateAction<Category[]>>
+): ColumnDef<Category>[] => [
   {
     accessorKey: "category_id",
     header: ({ column }) => <DataTableColumnHeader column={column} title="#" />,
@@ -45,7 +22,20 @@ export const columns: ColumnDef<Category>[] = [
     ),
   },
   {
+    accessorKey: "icon",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Icon" />
+    ),
+  },
+  {
     id: "actions",
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    cell: ({ row }) => (
+      <DataTableRowActions
+        row={row}
+        setOpenEditDialog={setOpenEditDialog}
+        setSelectedCategory={setSelectedCategory}
+        setData={setData}
+      />
+    ),
   },
 ];

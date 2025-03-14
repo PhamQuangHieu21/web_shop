@@ -19,6 +19,12 @@ export const RES_MESSAGES = {
     WEAK_PASSWORD: "Password must be at least 6 characters",
     FIND_PASSWORD_RESET_MAIL: "Please check your mailbox to find reset password mail",
     INVALID_USER_ROLE: "User role is invalid",
+
+    // CATEGORY
+    CATEGORY_NAME_EXIST: "Tên danh mục đã tồn tại",
+    CREATE_CATEGORY_SUCCESSFULLY: "Tạo danh mục sản phẩm thành công",
+    DELETE_CATEGORY_SUCCESSFULLY: "Xóa danh mục sản phẩm thành công",
+    UPDATE_CATEGORY_SUCCESSFULLY: "Cập nhật danh mục sản phẩm thành công",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {

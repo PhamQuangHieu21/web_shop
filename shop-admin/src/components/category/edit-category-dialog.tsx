@@ -1,82 +1,58 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Loader2, Plus } from "lucide-react";
-import { Category } from "./columns";
-import { toast } from "sonner";
+import { Category } from "@/lib/types";
+import EditCategoryForm from "./edit-product-form";
+import { Plus } from "lucide-react";
 
 interface EditCategoryDialogProps {
   setData: React.Dispatch<React.SetStateAction<Category[]>>;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedCategory: Category | null | undefined;
+  onCloseEditDialog: () => void;
 }
 
 const EditCategoryDialog = ({
   setData,
   open,
   setOpen,
+  selectedCategory,
+  onCloseEditDialog,
 }: EditCategoryDialogProps) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [name, setName] = useState<string>("");
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        if (!isOpen) onCloseEditDialog();
+      }}
+    >
       <DialogTrigger asChild>
         <Button>
           <Plus /> Thêm danh mục
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="container max-w-xs">
         <DialogHeader>
-          <DialogTitle>Thêm danh mục</DialogTitle>
-          <DialogDescription>
-            Điền thông tin về danh mục muốn thêm.
-          </DialogDescription>
+          <DialogTitle>
+            {selectedCategory ? "Sửa" : "Thêm"} danh mục
+          </DialogTitle>
+          <DialogDescription>Điền thông tin về danh mục.</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button
-            type="submit"
-            onClick={() => {
-              setLoading(true);
-              setTimeout(() => {
-                setData((prev) => [
-                  { category_id: Date.now().toString(), name: name },
-                  ...prev,
-                ]);
-                setLoading(false);
-                toast.success("Added category successfully.");
-                setOpen(false);
-              }, 1000);
-            }}
-            disabled={loading}
-          >
-            {loading && <Loader2 className="animate-spin" />}
-            Save changes
-          </Button>
-        </DialogFooter>
+        <EditCategoryForm
+          setData={setData}
+          setOpenDialog={setOpen}
+          selectedCategory={selectedCategory}
+        />
       </DialogContent>
     </Dialog>
   );
