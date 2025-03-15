@@ -61,14 +61,30 @@ CREATE TABLE category (
 CREATE TABLE product (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(255) NOT NULL,
-    description TEXT,
-    price DECIMAL(10,2) NOT NULL,
+    description TEXT NOT NULL,
+    price INT NOT NULL,
     quantity INT NOT NULL DEFAULT 0,
     category_id INT,
-    img VARCHAR(255),
-    FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE SET NULL,
     modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE SET NULL
+);
+
+-- Product Images
+CREATE TABLE product_image (
+    product_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL UNIQUE,
+    PRIMARY KEY (product_id, image_url),
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
+);
+
+-- Product Favourites
+CREATE TABLE product_favourite (
+    product_id INT NOT NULL,
+    user_id INT NOT NULL,
+    PRIMARY KEY (product_id, user_id),
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
 -- Cart

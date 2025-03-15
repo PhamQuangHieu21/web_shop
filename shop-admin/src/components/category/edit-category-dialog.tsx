@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Category } from "@/lib/types";
-import EditCategoryForm from "./edit-product-form";
+import EditCategoryForm from "./edit-category-form";
 import { Plus } from "lucide-react";
 
 interface EditCategoryDialogProps {

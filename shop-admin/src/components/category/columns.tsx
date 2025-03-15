@@ -1,7 +1,7 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../common/data-table-column-header";
-import { DataTableRowActions } from "./data-table-row-actions";
+import { CategoryTableRowActions } from "./data-table-row-actions";
 import { Category } from "@/lib/types";
 
 export const columns = (
@@ -30,7 +30,7 @@ export const columns = (
   {
     id: "actions",
     cell: ({ row }) => (
-      <DataTableRowActions
+      <CategoryTableRowActions
         row={row}
         setOpenEditDialog={setOpenEditDialog}
         setSelectedCategory={setSelectedCategory}

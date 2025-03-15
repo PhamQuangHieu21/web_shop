@@ -31,7 +31,7 @@ interface DataTableRowActionsProps<TData> {
   setData: React.Dispatch<React.SetStateAction<Category[]>>;
 }
 
-export function DataTableRowActions({
+export function CategoryTableRowActions({
   row,
   setOpenEditDialog,
   setSelectedCategory,

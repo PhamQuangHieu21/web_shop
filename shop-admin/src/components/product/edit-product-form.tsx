@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Form,
   FormControl,
@@ -21,23 +21,113 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Category, Product } from "@/lib/types";
+import { apiRequest, apiRequestWithFormData } from "@/lib/utils";
+import { toast } from "sonner";
+import { Loader, Loader2 } from "lucide-react";
 
-const EditProductForm = () => {
+interface EditProductFormProps {
+  setData: React.Dispatch<React.SetStateAction<Product[]>>;
+  setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedProduct: Product | null | undefined;
+}
+
+const EditProductForm = ({
+  setData,
+  setOpenDialog,
+  selectedProduct,
+}: EditProductFormProps) => {
+  const [categoryList, setCategoryList] = useState<Category[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof editProductFormSchema>>({
     resolver: zodResolver(editProductFormSchema),
-    defaultValues: {
-      product_name: "",
-      description: "",
-      price: 0,
-      quantity: 0,
-      category: "",
-      images: [],
-    },
+    defaultValues: selectedProduct
+      ? {
+          product_name: selectedProduct.product_name,
+          description: selectedProduct.description,
+          price: selectedProduct.price,
+          quantity: selectedProduct.quantity,
+          category_id: selectedProduct.category_id.toString(),
+          images: [],
+        }
+      : {
+          product_name: "",
+          description: "",
+          price: 0,
+          quantity: 0,
+          category_id: "",
+          images: [],
+        },
   });
 
-  function onSubmit(values: z.infer<typeof editProductFormSchema>) {
-    console.log(values);
+  async function updateProduct(data: FormData) {
+    setIsSubmitting(true);
+    try {
+      const product = await apiRequestWithFormData<Product>(
+        `/product/update/${selectedProduct?.product_id}`,
+        "PUT",
+        data
+      );
+      setData((prev) =>
+        prev.map((item) =>
+          item.product_id === selectedProduct?.product_id
+            ? (product as Product)
+            : item
+        )
+      );
+      toast.success("Sửa sản phẩm thành công.");
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi khi sửa sản phẩm.");
+    }
+    setIsSubmitting(false);
   }
+
+  async function createProduct(data: FormData) {
+    setIsSubmitting(true);
+    try {
+      const product = await apiRequestWithFormData<Product>(
+        "/product/new",
+        "POST",
+        data
+      );
+      setData((prev) => [product as Product, ...prev]);
+      toast.success("Thêm sản phẩm thành công.");
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi khi tạo sản phẩm.");
+    }
+    setIsSubmitting(false);
+  }
+
+  async function onSubmit(values: z.infer<typeof editProductFormSchema>) {
+    let formData = new FormData();
+    for (let key in values) {
+      if (key !== "images") formData.append(key, values[key]);
+    }
+    if (selectedProduct) await updateProduct(formData);
+    else {
+      for (let i = 0; i < values.images.length; i++) {
+        formData.append("images", values.images[i]);
+      }
+      await createProduct(formData);
+    }
+    setOpenDialog(false);
+  }
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const categories = await apiRequest<Category>("/category/list", "GET");
+        setCategoryList(categories as Category[]);
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi khi lấy danh sách danh mục sản phẩm.");
+      }
+      setLoading(false);
+    }
+
+    fetchCategories();
+  }, []);
 
   return (
     <Form {...form}>
@@ -105,22 +195,35 @@ const EditProductForm = () => {
         {/* Category */}
         <FormField
           control={form.control}
-          name="category"
+          name="category_id"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Danh mục</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
-                </SelectContent>
-              </Select>
+              {loading ? (
+                <Loader className="animate-spin" />
+              ) : categoryList.length > 0 ? (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn danh mục sản phẩm" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categoryList.map((item) => (
+                      <SelectItem
+                        key={item.category_id}
+                        value={item.category_id.toString()}
+                      >
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <p className="leading-7 text-red-500">
+                  Vui lòng thêm danh mục sản phẩm.
+                </p>
+              )}
               <FormMessage />
             </FormItem>
           )}
@@ -146,8 +249,9 @@ const EditProductForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Thêm sản phẩm
+        <Button type="submit" className="w-full" disabled={loading}>
+          {isSubmitting && <Loader2 className="animate-spin" />}{" "}
+          {selectedProduct ? "Sửa" : "Thêm"} sản phẩm
         </Button>
       </form>
     </Form>

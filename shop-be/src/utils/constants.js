@@ -25,6 +25,10 @@ export const RES_MESSAGES = {
     CREATE_CATEGORY_SUCCESSFULLY: "Tạo danh mục sản phẩm thành công",
     DELETE_CATEGORY_SUCCESSFULLY: "Xóa danh mục sản phẩm thành công",
     UPDATE_CATEGORY_SUCCESSFULLY: "Cập nhật danh mục sản phẩm thành công",
+    CATEGORY_NAME_NOT_EXIST: "Không tồn tại danh mục sản phẩm",
+
+    // PRODUCT
+    DELETE_PRODUCT_SUCCESSFULLY: "Xóa sản phẩm thành công",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {

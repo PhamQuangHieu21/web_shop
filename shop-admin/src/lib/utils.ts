@@ -19,7 +19,7 @@ export async function apiRequest<T>(
         "Content-Type": "application/json",
         ...headers,
       },
-      body: body ? JSON.stringify(body) : undefined,
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
@@ -40,4 +40,54 @@ export async function apiRequest<T>(
     console.error("API Request Failed:", error);
     throw error;
   }
+}
+
+export async function apiRequestWithFormData<T>(
+  endpoint: string,
+  method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
+  body?: any,
+  headers: HeadersInit = {}
+): Promise<T | T[] | ""> {
+  try {
+    const res = await fetch(`${SERVER_URL}${endpoint}`, {
+      method,
+      headers: {
+        ...headers,
+      },
+      body: body ? body : undefined,
+    });
+
+    if (!res.ok) {
+      throw new Error(`API Error: ${res.status} ${res.statusText}`);
+    }
+
+    const responseJson = await res.json();
+
+    // Handle different response cases
+    if (responseJson?.data) {
+      return responseJson.data; // Could be T[] or T
+    } else if (responseJson.data === "") {
+      return ""; // If data is an empty string, return null
+    }
+
+    throw new Error("Invalid API response format");
+  } catch (error) {
+    console.error("API Request Failed:", error);
+    throw error;
+  }
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date
+    .toLocaleString("en-GB", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+    .replace(",", ""); // Remove comma
 }

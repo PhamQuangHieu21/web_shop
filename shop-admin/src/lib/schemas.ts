@@ -44,13 +44,13 @@ export const editCategoryFormSchema = z.object({
 
 export const editProductFormSchema = z.object({
   product_name: z.string().min(1, "Nhập tên sản phẩm."),
-  description: z.string().optional(),
+  description: z.string().min(1, "Nhập mô tả sản phẩm."),
   price: z.coerce.number().positive("Giá sản phẩm không hợp lệ."),
   quantity: z.coerce
     .number()
     .int()
     .nonnegative("Số lượng sản phẩm không hợp lệ."),
-  category: z.string().min(1, "Chọn danh mục sản phẩm."),
+  category_id: z.string().min(1, "Chọn danh mục sản phẩm."),
   images: z
     .any()
     // To not allow empty files
