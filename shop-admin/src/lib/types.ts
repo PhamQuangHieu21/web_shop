@@ -17,7 +17,7 @@ export type Product = {
   description: string;
   price: number;
   quantity: number;
-  images: string[];
+  current_images: string[];
   category: string;
   category_id: string;
   created_date: Date;

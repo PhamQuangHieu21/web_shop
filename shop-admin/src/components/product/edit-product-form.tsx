@@ -24,7 +24,8 @@ import {
 import { Category, Product } from "@/lib/types";
 import { apiRequest, apiRequestWithFormData } from "@/lib/utils";
 import { toast } from "sonner";
-import { Loader, Loader2 } from "lucide-react";
+import { Loader, Loader2, RotateCw, Trash2, X } from "lucide-react";
+import { SERVER_URL } from "@/lib/data";
 
 interface EditProductFormProps {
   setData: React.Dispatch<React.SetStateAction<Product[]>>;
@@ -40,6 +41,32 @@ const EditProductForm = ({
   const [categoryList, setCategoryList] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [previewImages, setPreviewImages] = useState<any[]>([]);
+  const [currentImages, setCurrentImages] = useState<string[]>(
+    selectedProduct ? selectedProduct.current_images : []
+  );
+  const [deletedImages, setDeletedImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    return () => {
+      // Cleanup only when the component unmounts
+      previewImages.forEach((image) => URL.revokeObjectURL(image.preview));
+    };
+  }, []);
+
+  const handleRemoveImage = (index: number) => {
+    // Copy from the state
+    const newImages = Array.from(previewImages).filter((_, i) => i !== index);
+    // Revoke the deleted image blob object
+    URL.revokeObjectURL(previewImages[index].preview);
+    // Update field value
+    form.setValue(
+      "new_images",
+      newImages.map((img) => img.file)
+    );
+    // Update preview image
+    setPreviewImages(newImages);
+  };
 
   const form = useForm<z.infer<typeof editProductFormSchema>>({
     resolver: zodResolver(editProductFormSchema),
@@ -50,7 +77,9 @@ const EditProductForm = ({
           price: selectedProduct.price,
           quantity: selectedProduct.quantity,
           category_id: selectedProduct.category_id.toString(),
-          images: [],
+          new_images: [],
+          current_images: selectedProduct.current_images,
+          action: "update",
         }
       : {
           product_name: "",
@@ -58,7 +87,9 @@ const EditProductForm = ({
           price: 0,
           quantity: 0,
           category_id: "",
-          images: [],
+          new_images: [],
+          current_images: [],
+          action: "add",
         },
   });
 
@@ -103,13 +134,17 @@ const EditProductForm = ({
   async function onSubmit(values: z.infer<typeof editProductFormSchema>) {
     let formData = new FormData();
     for (let key in values) {
-      if (key !== "images") formData.append(key, values[key]);
+      if (key !== "new_images") formData.append(key, values[key]);
     }
-    if (selectedProduct) await updateProduct(formData);
-    else {
-      for (let i = 0; i < values.images.length; i++) {
-        formData.append("images", values.images[i]);
+    for (let image of values.new_images) {
+      formData.append("new_images", image);
+    }
+    if (selectedProduct) {
+      for (let image of deletedImages) {
+        formData.append("deleted_images", image);
       }
+      await updateProduct(formData);
+    } else {
       await createProduct(formData);
     }
     setOpenDialog(false);
@@ -231,7 +266,7 @@ const EditProductForm = ({
         {/* Image Upload */}
         <FormField
           control={form.control}
-          name="images"
+          name="new_images"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Số lượng</FormLabel>
@@ -240,15 +275,155 @@ const EditProductForm = ({
                   accept=".jpg, .jpeg, .png, .webp"
                   type="file"
                   multiple
-                  onChange={(e) =>
-                    field.onChange(e.target.files ? e.target.files : null)
-                  }
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      field.onChange(e.target.files ? e.target.files : null);
+                      setPreviewImages(
+                        [...e.target.files].map((file) => ({
+                          file: file,
+                          preview: URL.createObjectURL(file),
+                        }))
+                      );
+                    }
+                  }}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+        {/* Deleted Images */}
+        {deletedImages.length > 0 && (
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <p>Ảnh cần xóa</p>
+              <Button
+                className="bg-green-600"
+                onClick={() => {
+                  setCurrentImages((prev) => [...prev, ...deletedImages]);
+                  setDeletedImages([]);
+                }}
+              >
+                <RotateCw /> Khôi phục tất cả
+              </Button>
+            </div>
+            <div className="grid sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-4 w-full mx-auto">
+              {deletedImages.map((imageUrl, index) => (
+                <div
+                  key={index}
+                  className="relative py-0 overflow-hidden rounded-sm shadow-xl"
+                >
+                  <img
+                    src={`${SERVER_URL}/${imageUrl}`}
+                    alt="Project"
+                    className="w-full h-[80px] object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="absolute top-[2px] right-[2px] hover:bg-green-600 w-5 h-5 rounded-sm"
+                    onClick={() => {
+                      setCurrentImages((prev) => [...prev, imageUrl]);
+                      setDeletedImages((prev) =>
+                        prev.filter((item) => item !== imageUrl)
+                      );
+                    }}
+                  >
+                    <RotateCw color="#FFF" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {/* Current Images */}
+        {currentImages.length > 0 && (
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <p>Ảnh hiện tại</p>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setDeletedImages((prev) => [...prev, ...currentImages]);
+                  setCurrentImages([]);
+                }}
+              >
+                <Trash2 /> Xóa tất cả
+              </Button>
+            </div>
+            <div className="grid sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-4 w-full mx-auto">
+              {currentImages.map((imageUrl, index) => (
+                <div
+                  key={index}
+                  className="relative py-0 overflow-hidden rounded-sm shadow-xl"
+                >
+                  <img
+                    src={`${SERVER_URL}/${imageUrl}`}
+                    alt="Project"
+                    className="w-full h-[80px] object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="absolute top-[2px] right-[2px] hover:bg-red-500 w-5 h-5 rounded-sm"
+                    onClick={() => {
+                      setDeletedImages((prev) => [...prev, imageUrl]);
+                      setCurrentImages((prev) =>
+                        prev.filter((item) => item !== imageUrl)
+                      );
+                    }}
+                  >
+                    <X color="#FFF" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {/* Preview Image */}
+        {previewImages.length > 0 && (
+          <div>
+            {previewImages.length > 0 && (
+              <div className="flex justify-between items-center mb-2">
+                <p>Ảnh thêm mới</p>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    previewImages.forEach((image) =>
+                      URL.revokeObjectURL(image.preview)
+                    );
+                    form.setValue("new_images", null);
+                    setPreviewImages([]);
+                  }}
+                >
+                  <Trash2 /> Xóa tất cả
+                </Button>
+              </div>
+            )}
+            <div className="grid sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-4 w-full mx-auto">
+              {previewImages.map((image, index) => (
+                <div
+                  key={index}
+                  className="relative py-0 overflow-hidden rounded-sm shadow-xl"
+                >
+                  <img
+                    src={image.preview}
+                    alt="Project"
+                    className="w-full h-[80px] object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="absolute top-[2px] right-[2px] hover:bg-red-500 w-5 h-5 rounded-sm"
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    <X color="#FFF" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <Button type="submit" className="w-full" disabled={loading}>
           {isSubmitting && <Loader2 className="animate-spin" />}{" "}
           {selectedProduct ? "Sửa" : "Thêm"} sản phẩm

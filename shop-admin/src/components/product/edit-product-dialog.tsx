@@ -41,16 +41,16 @@ const EditProductDialog = ({
           <Plus /> Thêm sản phẩm
         </Button>
       </DialogTrigger>
-      <DialogContent className="container max-w-xs">
+      <DialogContent className="container sm:max-w-2xl overflow-y-auto max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>{selectedProduct ? "Sửa" : "Thêm"} sản phẩm</DialogTitle>
           <DialogDescription>Điền thông tin về sản phẩm.</DialogDescription>
+          <EditProductForm
+            setData={setData}
+            setOpenDialog={setOpen}
+            selectedProduct={selectedProduct}
+          />
         </DialogHeader>
-        <EditProductForm
-          setData={setData}
-          setOpenDialog={setOpen}
-          selectedProduct={selectedProduct}
-        />
       </DialogContent>
     </Dialog>
   );

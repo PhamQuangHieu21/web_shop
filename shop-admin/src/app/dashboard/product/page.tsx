@@ -18,10 +18,10 @@ export default function ProductPage() {
   };
 
   useEffect(() => {
-    async function fetchCategories() {
+    async function fetchProducts() {
       try {
-        const categories = await apiRequest<Product>("/product/list", "GET");
-        setData(categories as Product[]);
+        const products = await apiRequest<Product>("/product/list", "GET");
+        setData(products as Product[]);
         setLoading(false);
       } catch (error) {
         setLoading(false);
@@ -29,7 +29,7 @@ export default function ProductPage() {
       }
     }
 
-    fetchCategories();
+    fetchProducts();
   }, []);
 
   return (

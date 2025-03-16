@@ -29,6 +29,7 @@ export const RES_MESSAGES = {
 
     // PRODUCT
     DELETE_PRODUCT_SUCCESSFULLY: "Xóa sản phẩm thành công",
+    PRODUCT_NOT_EXIST: "Không tồn tại sản phẩm",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {

@@ -8,13 +8,13 @@ const productImageStorage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const fileName = Date.now() + path.extname(file.originalname);
-        if (!(req.body.images instanceof Array)) req.body.images = [];
+        if (!(req.body.new_images instanceof Array)) req.body.new_images = [];
 
         const REQUIRED_PATH = path.join("STATIC", "images");
         if (!existsSync(REQUIRED_PATH))
             mkdirSync(REQUIRED_PATH, { recursive: true });
 
-        req.body.images.push(`images/${fileName}`);
+        req.body.new_images.push(`images/${fileName}`);
         cb(null, fileName);
     },
 });

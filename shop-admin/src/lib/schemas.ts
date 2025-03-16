@@ -42,33 +42,73 @@ export const editCategoryFormSchema = z.object({
   icon: z.string().min(1, { message: "Nhập biểu tượng cho danh mục." }),
 });
 
-export const editProductFormSchema = z.object({
-  product_name: z.string().min(1, "Nhập tên sản phẩm."),
-  description: z.string().min(1, "Nhập mô tả sản phẩm."),
-  price: z.coerce.number().positive("Giá sản phẩm không hợp lệ."),
-  quantity: z.coerce
-    .number()
-    .int()
-    .nonnegative("Số lượng sản phẩm không hợp lệ."),
-  category_id: z.string().min(1, "Chọn danh mục sản phẩm."),
-  images: z
-    .any()
-    // To not allow empty files
-    .refine((files) => files?.length >= 1, {
-      message: "Nhập ít nhất một ảnh sản phẩm.",
-    })
-    // To not allow files other than images
-    .refine(
-      (files) =>
-        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-          files?.[0]?.type
-        ),
-      {
-        message: "Các định dạng ảnh hợp lệ: .jpg, .jpeg, .png, .webp",
+export const editProductFormSchema = z
+  .object({
+    action: z.enum(["add", "update"]),
+    product_name: z.string().min(1, "Nhập tên sản phẩm."),
+    description: z.string().min(1, "Nhập mô tả sản phẩm."),
+    price: z.coerce.number().positive("Giá sản phẩm không hợp lệ."),
+    quantity: z.coerce
+      .number()
+      .int()
+      .nonnegative("Số lượng sản phẩm không hợp lệ."),
+    category_id: z.string().min(1, "Chọn danh mục sản phẩm."),
+    current_images: z.array(z.string()).optional(),
+    new_images: z.any(),
+  })
+  .refine(
+    (data) => {
+      // console.log("Current Images:", data.current_images);
+      // console.log("New Images:", data.new_images);
+
+      if (data.action === "add") {
+        return data.new_images && data.new_images?.length > 0;
       }
-    )
-    // To not allow files larger than 10MB
-    .refine((files) => files?.[0]?.size <= 10000000, {
+      if (data.action === "update") {
+        return (
+          (data.new_images && data.new_images.length > 0) ||
+          (data.current_images && data.current_images.length > 0)
+        );
+      }
+      return false;
+    },
+    {
+      message: "Nhập ít nhất một ảnh sản phẩm (hình ảnh cũ hoặc mới).",
+      path: ["new_images"],
+    }
+  )
+  .refine(
+    (data) => {
+      // Ensure all files are valid images
+      if (data.new_images?.length > 0) {
+        return Array.from(data.new_images).every(
+          (file) =>
+            file &&
+            ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+              file.type
+            )
+        );
+      }
+      return true;
+    },
+    {
+      message: "Các định dạng ảnh hợp lệ: .jpg, .jpeg, .png, .webp",
+      path: ["new_images"],
+    }
+  )
+  .refine(
+    (data) => {
+      // Ensure all files are under 10MB
+      if (data.new_images?.length > 0) {
+        return Array.from(data.new_images).every(
+          (file) => file && file.size <= 10000000
+        );
+      }
+
+      return true;
+    },
+    {
       message: "Kích thước ảnh tối đa là 10MB",
-    }),
-});
+      path: ["new_images"],
+    }
+  );
