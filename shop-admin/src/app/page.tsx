@@ -1,14 +1,18 @@
 "use client";
-
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
+
+function checkAuth() {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem("user_info") !== null;
+}
 
 export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const isAuthenticated = checkAuth(); // Replace with your actual auth logic
-
+    const isAuthenticated = checkAuth();
     if (isAuthenticated) {
       router.replace("/dashboard");
     } else {
@@ -16,11 +20,9 @@ export default function HomePage() {
     }
   }, []);
 
-  return <div>Loading...</div>; // Optional loading message
-}
-
-// Dummy authentication check function (Replace with real logic)
-function checkAuth() {
-  if (typeof window === "undefined") return false; // Ensure it's client-side
-  return sessionStorage.getItem("token") !== null; // Example: Check for token
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <Loader className="animate-spin" size={30} />
+    </div>
+  );
 }

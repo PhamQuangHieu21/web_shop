@@ -36,3 +36,21 @@ export type ApiResponse<T> = {
   data: T | T[] | "";
   status: number;
 };
+
+export type UserSignupForm = {
+  full_name: string;
+  phone_number: string;
+  address: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
+export type User = {
+  user_id: number;
+  full_name: string;
+  phone_number: string;
+  address: string;
+  email: string;
+  role: string;
+};

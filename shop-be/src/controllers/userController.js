@@ -22,6 +22,7 @@ export const register = async (req, res) => {
                 message: RES_MESSAGES.INVALID_USER_ROLE,
                 data: "",
             });
+
         const [existingPhone] = await pool.query(
             "SELECT * FROM `user` WHERE phone_number = ?",
             [user.phone_number]
@@ -37,14 +38,13 @@ export const register = async (req, res) => {
         await sendEmailVerification(auth.currentUser);
 
         const hashedPassword = await bcrypt.hash(user.password, 12);
-        console.log(hashedPassword);
         await pool.query(
             "INSERT INTO `user` (full_name, email, password, phone_number, address, role) VALUES (?, ?, ?, ?, ?, ?)",
             [user.full_name, user.email, hashedPassword, user.phone_number, user.address, user.role]
         );
 
         res.status(200).json({
-            message: "User registered successfully",
+            message: RES_MESSAGES.REGISTER_USER_SUCCESSFULLY,
             data: "",
         });
     } catch (error) {
@@ -80,7 +80,7 @@ export const login = async (req, res) => {
         if (auth.currentUser && auth.currentUser.emailVerified) {
             delete existingUser[0].password;
             res.status(200).json({
-                message: "Login successfully",
+                message: RES_MESSAGES.USER_LOGIN_SUCCESSFULLY,
                 data: existingUser[0],
             });
         }

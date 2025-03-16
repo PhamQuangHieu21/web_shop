@@ -20,54 +20,47 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-const data = {
-  user: {
-    name: "ducbh",
-    email: "ducbh62workspace@gmail.com",
-    avatar: "/static/avatar.jpg",
+const navMain = [
+  {
+    title: "Tổng quan",
+    url: "/dashboard",
+    icon: SquareKanban,
   },
-  navMain: [
-    {
-      title: "Tổng quan",
-      url: "/dashboard",
-      icon: SquareKanban,
-    },
-    {
-      title: "Sản phẩm",
-      url: "/dashboard/product",
-      icon: Shirt,
-    },
-    {
-      title: "Danh mục",
-      url: "/dashboard/category",
-      icon: ChartBarStacked,
-    },
-    {
-      title: "Đơn hàng",
-      url: "/dashboard/order",
-      icon: ReceiptText,
-    },
-    {
-      title: "Đánh giá",
-      url: "/dashboard/review",
-      icon: Star,
-    },
-    {
-      title: "Cài đặt",
-      url: "/dashboard/settings",
-      icon: Settings2,
-    },
-  ],
-};
+  {
+    title: "Sản phẩm",
+    url: "/dashboard/product",
+    icon: Shirt,
+  },
+  {
+    title: "Danh mục",
+    url: "/dashboard/category",
+    icon: ChartBarStacked,
+  },
+  {
+    title: "Đơn hàng",
+    url: "/dashboard/order",
+    icon: ReceiptText,
+  },
+  {
+    title: "Đánh giá",
+    url: "/dashboard/review",
+    icon: Star,
+  },
+  {
+    title: "Cài đặt",
+    url: "/dashboard/settings",
+    icon: Settings2,
+  },
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
       </SidebarContent>
       <SidebarFooter></SidebarFooter>
       <SidebarRail />
