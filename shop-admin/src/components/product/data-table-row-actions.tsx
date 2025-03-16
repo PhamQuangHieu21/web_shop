@@ -41,16 +41,18 @@ export function ProductTableRowActions({
 
   async function deleteProduct() {
     try {
-      await apiRequest<Product>(
+      const res = await apiRequest<Product>(
         `/product/delete/${product.product_id}`,
         "DELETE"
       );
-      setData((prev) =>
-        prev.filter((item) => item.product_id !== product.product_id)
-      );
-      toast.success("Xóa sản phẩm thành công.");
+      if (res.status === 200) {
+        setData((prev) =>
+          prev.filter((item) => item.product_id !== product.product_id)
+        );
+        toast.success(res.message);
+      } else toast.error(res.message);
     } catch (error) {
-      toast.error("Đã xảy ra lỗi khi xóa sản phẩm.");
+      toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
     }
   }
 

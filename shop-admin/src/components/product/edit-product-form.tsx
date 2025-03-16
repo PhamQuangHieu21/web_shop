@@ -96,19 +96,24 @@ const EditProductForm = ({
   async function updateProduct(data: FormData) {
     setIsSubmitting(true);
     try {
-      const product = await apiRequestWithFormData<Product>(
+      const res = await apiRequestWithFormData<Product>(
         `/product/update/${selectedProduct?.product_id}`,
         "PUT",
         data
       );
-      setData((prev) =>
-        prev.map((item) =>
-          item.product_id === selectedProduct?.product_id
-            ? (product as Product)
-            : item
-        )
-      );
-      toast.success("Sửa sản phẩm thành công.");
+      if (res.status === 200) {
+        setData((prev) =>
+          prev.map((item) =>
+            item.product_id === selectedProduct?.product_id
+              ? (res.data as Product)
+              : item
+          )
+        );
+        toast.success(res.message);
+        setOpenDialog(false);
+      } else {
+        toast.error(res.message);
+      }
     } catch (error) {
       toast.error("Đã xảy ra lỗi khi sửa sản phẩm.");
     }
@@ -118,15 +123,20 @@ const EditProductForm = ({
   async function createProduct(data: FormData) {
     setIsSubmitting(true);
     try {
-      const product = await apiRequestWithFormData<Product>(
+      const res = await apiRequestWithFormData<Product>(
         "/product/new",
         "POST",
         data
       );
-      setData((prev) => [product as Product, ...prev]);
-      toast.success("Thêm sản phẩm thành công.");
+      if (res.status === 200) {
+        setData((prev) => [res.data as Product, ...prev]);
+        toast.success(res.message);
+        setOpenDialog(false);
+      } else {
+        toast.error(res.message);
+      }
     } catch (error) {
-      toast.error("Đã xảy ra lỗi khi tạo sản phẩm.");
+      toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
     }
     setIsSubmitting(false);
   }
@@ -147,16 +157,16 @@ const EditProductForm = ({
     } else {
       await createProduct(formData);
     }
-    setOpenDialog(false);
   }
 
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const categories = await apiRequest<Category>("/category/list", "GET");
-        setCategoryList(categories as Category[]);
+        const res = await apiRequest<Category>("/category/list", "GET");
+        if (res.status === 200) setCategoryList(res.data as Category[]);
+        else toast.error(res.message);
       } catch (error) {
-        toast.error("Đã xảy ra lỗi khi lấy danh sách danh mục sản phẩm.");
+        toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
       }
       setLoading(false);
     }
@@ -263,13 +273,13 @@ const EditProductForm = ({
             </FormItem>
           )}
         />
-        {/* Image Upload */}
+        {/* Upload Image */}
         <FormField
           control={form.control}
           name="new_images"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Số lượng</FormLabel>
+              <FormLabel>Ảnh sản phẩm</FormLabel>
               <FormControl>
                 <Input
                   accept=".jpg, .jpeg, .png, .webp"
@@ -300,6 +310,10 @@ const EditProductForm = ({
               <Button
                 className="bg-green-600"
                 onClick={() => {
+                  form.setValue("current_images", [
+                    ...currentImages,
+                    ...deletedImages,
+                  ]);
                   setCurrentImages((prev) => [...prev, ...deletedImages]);
                   setDeletedImages([]);
                 }}
@@ -327,6 +341,10 @@ const EditProductForm = ({
                       setDeletedImages((prev) =>
                         prev.filter((item) => item !== imageUrl)
                       );
+                      form.setValue("current_images", [
+                        ...currentImages,
+                        imageUrl,
+                      ]);
                     }}
                   >
                     <RotateCw color="#FFF" />
@@ -342,10 +360,11 @@ const EditProductForm = ({
             <div className="flex justify-between items-center mb-2">
               <p>Ảnh hiện tại</p>
               <Button
-                variant="destructive"
+                className="bg-red-600"
                 onClick={() => {
                   setDeletedImages((prev) => [...prev, ...currentImages]);
                   setCurrentImages([]);
+                  form.setValue("current_images", []);
                 }}
               >
                 <Trash2 /> Xóa tất cả
@@ -371,6 +390,10 @@ const EditProductForm = ({
                       setCurrentImages((prev) =>
                         prev.filter((item) => item !== imageUrl)
                       );
+                      form.setValue(
+                        "current_images",
+                        currentImages.filter((item) => item !== imageUrl)
+                      );
                     }}
                   >
                     <X color="#FFF" />
@@ -387,12 +410,12 @@ const EditProductForm = ({
               <div className="flex justify-between items-center mb-2">
                 <p>Ảnh thêm mới</p>
                 <Button
-                  variant="destructive"
+                  className="bg-red-600"
                   onClick={() => {
                     previewImages.forEach((image) =>
                       URL.revokeObjectURL(image.preview)
                     );
-                    form.setValue("new_images", null);
+                    form.setValue("new_images", []);
                     setPreviewImages([]);
                   }}
                 >

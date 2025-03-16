@@ -47,19 +47,22 @@ const EditCategoryForm = ({
   async function updateCategory(data: CategoryForm) {
     setLoading(true);
     try {
-      const category = await apiRequest<Category>(
+      const res = await apiRequest<Category>(
         `/category/update/${selectedCategory?.category_id}`,
         "PUT",
         data
       );
-      setData((prev) =>
-        prev.map((item) =>
-          item.category_id === selectedCategory?.category_id
-            ? (category as Category)
-            : item
-        )
-      );
-      toast.success("Sửa danh mục sản phẩm thành công.");
+      if (res.status === 200) {
+        setData((prev) =>
+          prev.map((item) =>
+            item.category_id === selectedCategory?.category_id
+              ? (res.data as Category)
+              : item
+          )
+        );
+        toast.success("Sửa danh mục sản phẩm thành công.");
+        setOpenDialog(false);
+      } else toast.error(res.message);
     } catch (error) {
       toast.error("Đã xảy ra lỗi khi sửa danh mục.");
     }
@@ -69,13 +72,12 @@ const EditCategoryForm = ({
   async function createCategory(data: CategoryForm) {
     setLoading(true);
     try {
-      const category = await apiRequest<Category>(
-        "/category/new",
-        "POST",
-        data
-      );
-      setData((prev) => [category as Category, ...prev]);
-      toast.success("Thêm danh mục sản phẩm thành công.");
+      const res = await apiRequest<Category>("/category/new", "POST", data);
+      if (res.status === 200) {
+        setData((prev) => [res.data as Category, ...prev]);
+        toast.success("Thêm danh mục sản phẩm thành công.");
+        setOpenDialog(false);
+      } else toast.error(res.message);
     } catch (error) {
       toast.error("Đã xảy ra lỗi khi tạo danh mục.");
     }
@@ -85,7 +87,6 @@ const EditCategoryForm = ({
   async function onSubmit(values: z.infer<typeof editCategoryFormSchema>) {
     if (selectedCategory) await updateCategory(values);
     else await createCategory(values);
-    setOpenDialog(false);
   }
 
   return (

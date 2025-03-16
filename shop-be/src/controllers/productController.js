@@ -81,7 +81,7 @@ export const createProduct = async (req, res) => {
         rows[0].current_images = product.new_images;
 
         res.status(200).json({
-            message: "",
+            message: RES_MESSAGES.CREATE_PRODUCT_SUCCESSFULLY,
             data: rows[0],
         });
     } catch (error) {
@@ -170,10 +170,8 @@ export const updateProduct = async (req, res) => {
             returnedProduct.current_images = returnedImages.map(item => item.image_url)
         }
 
-        console.log(returnedProduct)
-
         res.status(200).json({
-            message: "",
+            message: RES_MESSAGES.UPDATE_PRODUCT_SUCCESSFULLY,
             data: returnedProduct,
         });
     } catch (error) {
@@ -208,7 +206,7 @@ export const deleteProduct = async (req, res) => {
     }
 };
 
-export const likeProduct = async (req, res) => {
+export const addProductToFavourite = async (req, res) => {
     const data = req.body;
     if (!data.user_id || !data.product_id) {
         res.status(400).send({
@@ -219,12 +217,12 @@ export const likeProduct = async (req, res) => {
     try {
         setTimeout(() => {
             res.status(200).json({
-                message: "Thêm sản phẩm vào mục yêu thích.",
+                message: RES_MESSAGES.ADD_PRODUCT_TO_FAVOURITE,
                 data: "",
             });
         }, 500);
     } catch (error) {
-        console.log("productController::likeProduct => error: " + error);
+        console.log("productController::addProductToFavourite => error: " + error);
         res.status(500).send({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",

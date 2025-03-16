@@ -30,3 +30,9 @@ export type ProductForm = {
   quantity: number;
   category_id: string;
 };
+
+export type ApiResponse<T> = {
+  message: string;
+  data: T | T[] | "";
+  status: number;
+};

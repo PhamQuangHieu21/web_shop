@@ -20,13 +20,13 @@ export default function ProductPage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const products = await apiRequest<Product>("/product/list", "GET");
-        setData(products as Product[]);
-        setLoading(false);
+        const res = await apiRequest<Product>("/product/list", "GET");
+        if (res.status === 200) setData(res.data as Product[]);
+        else toast.error(res.message);
       } catch (error) {
-        setLoading(false);
         toast.error("Đã xảy ra lỗi khi lấy danh sách sản phẩm.");
       }
+      setLoading(false);
     }
 
     fetchProducts();

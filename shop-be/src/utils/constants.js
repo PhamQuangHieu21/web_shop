@@ -2,7 +2,7 @@ export const PORT = 5000;
 export const SERVER_URL = `http://localhost:${PORT}`;
 
 export const RES_MESSAGES = {
-    SERVER_ERROR: "An unexpected error occurred",
+    SERVER_ERROR: "Đã xảy ra lỗi từ phía server. Quý khách vui lòng thử lại sau.",
 
     // USER
     USERNAME_EXIST: "Username already exists",
@@ -22,14 +22,17 @@ export const RES_MESSAGES = {
 
     // CATEGORY
     CATEGORY_NAME_EXIST: "Tên danh mục đã tồn tại",
-    CREATE_CATEGORY_SUCCESSFULLY: "Tạo danh mục sản phẩm thành công",
-    DELETE_CATEGORY_SUCCESSFULLY: "Xóa danh mục sản phẩm thành công",
-    UPDATE_CATEGORY_SUCCESSFULLY: "Cập nhật danh mục sản phẩm thành công",
-    CATEGORY_NAME_NOT_EXIST: "Không tồn tại danh mục sản phẩm",
+    CREATE_CATEGORY_SUCCESSFULLY: "Tạo danh mục sản phẩm thành công.",
+    DELETE_CATEGORY_SUCCESSFULLY: "Xóa danh mục sản phẩm thành công.",
+    UPDATE_CATEGORY_SUCCESSFULLY: "Cập nhật danh mục sản phẩm thành công.",
+    CATEGORY_NAME_NOT_EXIST: "Không tồn tại danh mục sản phẩm.",
 
     // PRODUCT
-    DELETE_PRODUCT_SUCCESSFULLY: "Xóa sản phẩm thành công",
-    PRODUCT_NOT_EXIST: "Không tồn tại sản phẩm",
+    DELETE_PRODUCT_SUCCESSFULLY: "Xóa sản phẩm thành công.",
+    PRODUCT_NOT_EXIST: "Không tồn tại sản phẩm.",
+    CREATE_PRODUCT_SUCCESSFULLY: "Tạo sản phẩm thành công.",
+    UPDATE_PRODUCT_SUCCESSFULLY: "Cập nhật sản phẩm thành công.",
+    ADD_PRODUCT_TO_FAVOURITE: "Thêm sản phẩm vào danh sách yêu thích.",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {

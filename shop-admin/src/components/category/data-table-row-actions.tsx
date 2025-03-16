@@ -41,16 +41,18 @@ export function CategoryTableRowActions({
 
   async function deleteCategory() {
     try {
-      await apiRequest<Category>(
+      const res = await apiRequest<Category>(
         `/category/delete/${category.category_id}`,
         "DELETE"
       );
-      setData((prev) =>
-        prev.filter((item) => item.category_id !== category.category_id)
-      );
-      toast.success("Xóa danh mục sản phẩm thành công.");
+      if (res.status === 200) {
+        setData((prev) =>
+          prev.filter((item) => item.category_id !== category.category_id)
+        );
+        toast.success(res.message);
+      } else toast.error(res.message);
     } catch (error) {
-      toast.error("Đã xảy ra lỗi khi xóa danh mục.");
+      toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
     }
   }
 

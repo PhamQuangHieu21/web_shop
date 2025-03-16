@@ -73,7 +73,7 @@ export const editProductFormSchema = z
       return false;
     },
     {
-      message: "Nhập ít nhất một ảnh sản phẩm (hình ảnh cũ hoặc mới).",
+      message: "Nhập ít nhất một ảnh sản phẩm.",
       path: ["new_images"],
     }
   )

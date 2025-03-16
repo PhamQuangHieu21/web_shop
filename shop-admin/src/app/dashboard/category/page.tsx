@@ -20,13 +20,13 @@ export default function CategoryPage() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const categories = await apiRequest<Category>("/category/list", "GET");
-        setData(categories as Category[]);
-        setLoading(false);
+        const res = await apiRequest<Category>("/category/list", "GET");
+        if (res.status === 200) setData(res.data as Category[]);
+        else toast.error(res.message);
       } catch (error) {
-        setLoading(false);
-        toast.error("Đã xảy ra lỗi khi lấy danh sách danh mục sản phẩm.");
+        toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
       }
+      setLoading(false);
     }
 
     fetchCategories();
