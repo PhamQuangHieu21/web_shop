@@ -75,7 +75,7 @@ export function ProductTableRowActions({
               setOpenEditDialog(true);
             }}
           >
-            Sửa
+            Cập nhật
           </DropdownMenuItem>
           <DialogTrigger asChild>
             <DropdownMenuItem>Xóa</DropdownMenuItem>

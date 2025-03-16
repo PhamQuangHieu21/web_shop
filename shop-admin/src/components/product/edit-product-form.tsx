@@ -115,7 +115,7 @@ const EditProductForm = ({
         toast.error(res.message);
       }
     } catch (error) {
-      toast.error("Đã xảy ra lỗi khi sửa sản phẩm.");
+      toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
     }
     setIsSubmitting(false);
   }
@@ -306,7 +306,7 @@ const EditProductForm = ({
         {deletedImages.length > 0 && (
           <div>
             <div className="flex justify-between items-center mb-2">
-              <p>Ảnh cần xóa</p>
+              <p>Ảnh cần xóa ({deletedImages.length})</p>
               <Button
                 className="bg-green-600"
                 onClick={() => {
@@ -358,7 +358,7 @@ const EditProductForm = ({
         {currentImages.length > 0 && (
           <div>
             <div className="flex justify-between items-center mb-2">
-              <p>Ảnh hiện tại</p>
+              <p>Ảnh hiện tại ({currentImages.length})</p>
               <Button
                 className="bg-red-600"
                 onClick={() => {
@@ -408,7 +408,7 @@ const EditProductForm = ({
           <div>
             {previewImages.length > 0 && (
               <div className="flex justify-between items-center mb-2">
-                <p>Ảnh thêm mới</p>
+                <p>Ảnh thêm mới ({previewImages.length})</p>
                 <Button
                   className="bg-red-600"
                   onClick={() => {
@@ -449,7 +449,7 @@ const EditProductForm = ({
         )}
         <Button type="submit" className="w-full" disabled={loading}>
           {isSubmitting && <Loader2 className="animate-spin" />}{" "}
-          {selectedProduct ? "Sửa" : "Thêm"} sản phẩm
+          {selectedProduct ? "Cập nhật" : "Thêm"} sản phẩm
         </Button>
       </form>
     </Form>

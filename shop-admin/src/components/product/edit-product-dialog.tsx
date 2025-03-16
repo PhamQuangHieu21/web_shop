@@ -43,7 +43,9 @@ const EditProductDialog = ({
       </DialogTrigger>
       <DialogContent className="container sm:max-w-2xl overflow-y-auto max-h-[80vh]">
         <DialogHeader>
-          <DialogTitle>{selectedProduct ? "Sửa" : "Thêm"} sản phẩm</DialogTitle>
+          <DialogTitle>
+            {selectedProduct ? "Cập nhật" : "Thêm"} sản phẩm
+          </DialogTitle>
           <DialogDescription>Điền thông tin về sản phẩm.</DialogDescription>
           <EditProductForm
             setData={setData}

@@ -60,11 +60,11 @@ const EditCategoryForm = ({
               : item
           )
         );
-        toast.success("Sửa danh mục sản phẩm thành công.");
+        toast.success(res.message);
         setOpenDialog(false);
       } else toast.error(res.message);
     } catch (error) {
-      toast.error("Đã xảy ra lỗi khi sửa danh mục.");
+      toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
     }
     setLoading(false);
   }
@@ -75,11 +75,11 @@ const EditCategoryForm = ({
       const res = await apiRequest<Category>("/category/new", "POST", data);
       if (res.status === 200) {
         setData((prev) => [res.data as Category, ...prev]);
-        toast.success("Thêm danh mục sản phẩm thành công.");
+        toast.success(res.message);
         setOpenDialog(false);
       } else toast.error(res.message);
     } catch (error) {
-      toast.error("Đã xảy ra lỗi khi tạo danh mục.");
+      toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
     }
     setLoading(false);
   }
@@ -122,7 +122,7 @@ const EditCategoryForm = ({
         />
         <Button type="submit" className="w-full" disabled={loading}>
           {loading && <Loader2 className="animate-spin" />}{" "}
-          {selectedCategory ? "Sửa" : "Thêm"} danh mục
+          {selectedCategory ? "Cập nhật" : "Thêm"} danh mục
         </Button>
       </form>
     </Form>

@@ -44,7 +44,7 @@ const EditCategoryDialog = ({
       <DialogContent className="container max-w-xs">
         <DialogHeader>
           <DialogTitle>
-            {selectedCategory ? "Sửa" : "Thêm"} danh mục
+            {selectedCategory ? "Cập nhật" : "Thêm"} danh mục
           </DialogTitle>
           <DialogDescription>Điền thông tin về danh mục.</DialogDescription>
         </DialogHeader>
