@@ -20,6 +20,7 @@ export type Product = {
   current_images: string[];
   category: string;
   category_id: string;
+  modified_date: Date;
   created_date: Date;
 };
 
@@ -53,4 +54,24 @@ export type User = {
   address: string;
   email: string;
   role: string;
+};
+
+export type Color = {
+  color_id: number;
+  color_name: string;
+  modified_date: Date;
+};
+
+export type ColorForm = {
+  color_name: string;
+};
+
+export type Size = {
+  size_id: number;
+  size_name: string;
+  modified_date: Date;
+};
+
+export type SizeForm = {
+  size_name: string;
 };

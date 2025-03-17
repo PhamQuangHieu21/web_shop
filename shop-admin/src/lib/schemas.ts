@@ -112,3 +112,13 @@ export const editProductFormSchema = z
       path: ["new_images"],
     }
   );
+
+export const editColorFormSchema = z.object({
+  color_name: z.string().regex(/^#([A-Fa-f0-9]{6})$/, {
+    message: "Mã màu không hợp lệ. Vui lòng nhập đúng định dạng #XXXXXX.",
+  }),
+});
+
+export const editSizeFormSchema = z.object({
+  size_name: z.string().min(1, { message: "kích cỡ không được để trống." }),
+});

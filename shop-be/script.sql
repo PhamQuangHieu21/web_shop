@@ -78,6 +78,36 @@ CREATE TABLE product_image (
     FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
+-- Product Color
+CREATE TABLE color (
+    color_id INT AUTO_INCREMENT PRIMARY KEY,
+    color_name VARCHAR(50) NOT NULL UNIQUE,
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Product Size
+CREATE TABLE size (
+    size_id INT AUTO_INCREMENT PRIMARY KEY,
+    size_name VARCHAR(50) NOT NULL UNIQUE,
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Product Variant
+CREATE TABLE variant (
+    variant_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    color_id INT,
+    size_id INT,
+    price INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE,
+    FOREIGN KEY (color_id) REFERENCES color(color_id) ON DELETE SET NULL,
+    FOREIGN KEY (size_id) REFERENCES size(size_id) ON DELETE SET NULL,
+    UNIQUE (product_id, color_id, size_id)
+);
+
 -- Product Favourites
 CREATE TABLE product_favourite (
     product_id INT NOT NULL,

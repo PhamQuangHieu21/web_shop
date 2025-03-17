@@ -47,12 +47,12 @@ export const columns = (
     ),
   },
   {
-    accessorKey: "created_date",
+    accessorKey: "modified_date",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Ngày tạo" />
+      <DataTableColumnHeader column={column} title="Chỉnh sửa" />
     ),
     cell: ({ row }) => {
-      return <p>{formatDate(row.getValue("created_date"))}</p>;
+      return <p>{formatDate(row.getValue("modified_date"))}</p>;
     },
   },
   {

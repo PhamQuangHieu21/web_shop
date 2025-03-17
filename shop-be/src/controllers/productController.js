@@ -130,14 +130,16 @@ export const updateProduct = async (req, res) => {
         );
 
         // Re-fetch category to return
-        const returnedProduct = { ...product, created_date: existingProduct[0].created_date, product_id: product_id };
+        const [returnedProduct] = await pool.query(
+            "SELECT * FROM `product` WHERE product_id = ?",
+            [product_id]
+        );
         const [returnedCategory] = await pool.query(
             "SELECT * FROM `category` WHERE category_id = ?",
             [product.category_id]
         );
         if (returnedCategory.length > 0) {
-            returnedProduct.category_id = returnedCategory[0].category_id;
-            returnedProduct.category = returnedCategory[0].name;
+            returnedProduct[0].category = returnedCategory[0].name;
         }
 
         // Delete product images if needed
@@ -167,12 +169,12 @@ export const updateProduct = async (req, res) => {
             [Number(product_id)]
         );
         if (returnedImages) {
-            returnedProduct.current_images = returnedImages.map(item => item.image_url)
+            returnedProduct[0].current_images = returnedImages.map(item => item.image_url)
         }
 
         res.status(200).json({
             message: RES_MESSAGES.UPDATE_PRODUCT_SUCCESSFULLY,
-            data: returnedProduct,
+            data: returnedProduct[0],
         });
     } catch (error) {
         console.log("productController::updateProduct => error: " + error);

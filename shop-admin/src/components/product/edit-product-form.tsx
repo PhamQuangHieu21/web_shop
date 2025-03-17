@@ -24,7 +24,7 @@ import {
 import { Category, Product } from "@/lib/types";
 import { apiRequest, apiRequestWithFormData } from "@/lib/utils";
 import { toast } from "sonner";
-import { Loader, Loader2, RotateCw, Trash2, X } from "lucide-react";
+import { Loader, RotateCw, Trash2, X } from "lucide-react";
 import { SERVER_URL } from "@/lib/data";
 
 interface EditProductFormProps {
@@ -448,7 +448,7 @@ const EditProductForm = ({
           </div>
         )}
         <Button type="submit" className="w-full" disabled={loading}>
-          {isSubmitting && <Loader2 className="animate-spin" />}{" "}
+          {isSubmitting && <Loader className="animate-spin" />}{" "}
           {selectedProduct ? "Cập nhật" : "Thêm"} sản phẩm
         </Button>
       </form>

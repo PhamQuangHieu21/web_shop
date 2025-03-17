@@ -12,121 +12,119 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { editCategoryFormSchema } from "@/lib/schemas";
-import { Category, CategoryForm } from "@/lib/types";
+import { editColorFormSchema } from "@/lib/schemas";
+import { Color, ColorForm } from "@/lib/types";
 import { apiRequest } from "@/lib/utils";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 
-interface EditCategoryFormProps {
-  setData: React.Dispatch<React.SetStateAction<Category[]>>;
+interface EditColorFormProps {
+  setData: React.Dispatch<React.SetStateAction<Color[]>>;
   setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedCategory: Category | null | undefined;
+  selectedColor: Color | null | undefined;
 }
 
-const EditCategoryForm = ({
+const EditColorForm = ({
   setData,
   setOpenDialog,
-  selectedCategory,
-}: EditCategoryFormProps) => {
+  selectedColor,
+}: EditColorFormProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof editCategoryFormSchema>>({
-    resolver: zodResolver(editCategoryFormSchema),
-    defaultValues: selectedCategory
+  const form = useForm<z.infer<typeof editColorFormSchema>>({
+    resolver: zodResolver(editColorFormSchema),
+    defaultValues: selectedColor
       ? {
-          name: selectedCategory.name,
-          icon: selectedCategory.icon,
+          color_name: selectedColor.color_name,
         }
       : {
-          name: "",
-          icon: "",
+          color_name: "",
         },
   });
 
-  async function updateCategory(data: CategoryForm) {
+  async function updateColor(data: ColorForm) {
     setLoading(true);
     try {
-      const res = await apiRequest<Category>(
-        `/category/update/${selectedCategory?.category_id}`,
+      const res = await apiRequest<Color>(
+        `/color/update/${selectedColor?.color_id}`,
         "PUT",
         data
       );
       if (res.status === 200) {
         setData((prev) =>
           prev.map((item) =>
-            item.category_id === selectedCategory?.category_id
-              ? (res.data as Category)
+            item.color_id === selectedColor?.color_id
+              ? (res.data as Color)
               : item
           )
         );
         toast.success(res.message);
         setOpenDialog(false);
-      } else toast.error(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (error) {
       toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
     }
     setLoading(false);
   }
 
-  async function createCategory(data: CategoryForm) {
+  async function createColor(data: ColorForm) {
     setLoading(true);
     try {
-      const res = await apiRequest<Category>("/category/new", "POST", data);
+      const res = await apiRequest<Color>("/color/new", "POST", data);
       if (res.status === 200) {
-        setData((prev) => [res.data as Category, ...prev]);
+        setData((prev) => [res.data as Color, ...prev]);
         toast.success(res.message);
         setOpenDialog(false);
-      } else toast.error(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (error) {
       toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
     }
     setLoading(false);
   }
 
-  async function onSubmit(values: z.infer<typeof editCategoryFormSchema>) {
-    if (selectedCategory) await updateCategory(values);
-    else await createCategory(values);
+  async function onSubmit(values: z.infer<typeof editColorFormSchema>) {
+    if (selectedColor) {
+      await updateColor(values);
+    } else {
+      await createColor(values);
+    }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {/* Name */}
+        {/* Color */}
         <FormField
           control={form.control}
-          name="name"
+          name="color_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tên danh mục</FormLabel>
+              <FormLabel>Màu sắc</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* Icon */}
-        <FormField
-          control={form.control}
-          name="icon"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Biểu tượng</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
+              {!form.getFieldState("color_name").error &&
+                field.value?.match(/^#([A-Fa-f0-9]{6})$/) && (
+                  <div
+                    className="w-[50px] h-[50px] rounded-[25px] border"
+                    style={{ backgroundColor: field.value }}
+                  ></div>
+                )}
             </FormItem>
           )}
         />
         <Button type="submit" className="w-full" disabled={loading}>
           {loading && <Loader className="animate-spin" />}{" "}
-          {selectedCategory ? "Cập nhật" : "Thêm"} danh mục
+          {selectedColor ? "Cập nhật" : "Thêm"} màu sắc
         </Button>
       </form>
     </Form>
   );
 };
 
-export default EditCategoryForm;
+export default EditColorForm;
