@@ -1,6 +1,4 @@
-CREATE DATABASE shop;
-DROP DATABASE shop;
-USE shop;
+
 
 -- User
 CREATE TABLE user (

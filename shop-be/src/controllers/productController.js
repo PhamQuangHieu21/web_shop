@@ -155,6 +155,7 @@ export const updateProduct = async (req, res) => {
 
         // Create new product images if needed
         if (product.new_images) {
+            console.log(product.new_images);
             for (let image of product.new_images) {
                 await pool.query(
                     "INSERT INTO `product_image` (product_id, image_url) VALUES (?, ?)",
