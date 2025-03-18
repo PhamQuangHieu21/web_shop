@@ -80,3 +80,7 @@ export function formatDate(dateString: string): string {
     })
     .replace(",", ""); // Remove comma
 }
+
+export function formatNumber(x: number) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}

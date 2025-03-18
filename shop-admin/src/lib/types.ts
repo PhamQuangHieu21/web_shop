@@ -15,8 +15,6 @@ export type Product = {
   product_id: number;
   product_name: string;
   description: string;
-  price: number;
-  quantity: number;
   current_images: string[];
   category: string;
   category_id: string;
@@ -27,8 +25,6 @@ export type Product = {
 export type ProductForm = {
   product_name: string;
   description: string;
-  price: number;
-  quantity: number;
   category_id: string;
 };
 
@@ -74,4 +70,48 @@ export type Size = {
 
 export type SizeForm = {
   size_name: string;
+};
+
+// For select
+export type ProductForSelect = {
+  product_id: string;
+  product_name: string;
+};
+
+export type ColorForSelect = {
+  color_id: string;
+  color_name: string;
+};
+
+export type SizeForSelect = {
+  size_id: string;
+  size_name: string;
+};
+
+export type Variant = {
+  variant_id: string;
+  size_id: string;
+  size_name: string;
+  color_id: string;
+  color_name: string;
+  product_id: string;
+  product_name: string;
+  price: number;
+  quantity: number;
+  created_date: Date;
+  modified_date: Date;
+};
+
+export type VariantForm = {
+  size_id: string;
+  color_id: string;
+  product_id: string;
+  price: number;
+  quantity: number;
+};
+
+export type VariantDependencies = {
+  products: ProductForSelect[];
+  colors: ColorForSelect[];
+  sizes: SizeForSelect[];
 };

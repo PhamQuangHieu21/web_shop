@@ -47,11 +47,6 @@ export const editProductFormSchema = z
     action: z.enum(["add", "update"]),
     product_name: z.string().min(1, "Nhập tên sản phẩm."),
     description: z.string().min(1, "Nhập mô tả sản phẩm."),
-    price: z.coerce.number().positive("Giá sản phẩm không hợp lệ."),
-    quantity: z.coerce
-      .number()
-      .int()
-      .nonnegative("Số lượng sản phẩm không hợp lệ."),
     category_id: z.string().min(1, "Chọn danh mục sản phẩm."),
     current_images: z.array(z.string()).optional(),
     new_images: z.any(),
@@ -121,4 +116,12 @@ export const editColorFormSchema = z.object({
 
 export const editSizeFormSchema = z.object({
   size_name: z.string().min(1, { message: "kích cỡ không được để trống." }),
+});
+
+export const editVariantFormSchema = z.object({
+  color_id: z.string().min(1, "Chọn màu sản phẩm."),
+  size_id: z.string().min(1, "Chọn kích cỡ sản phẩm."),
+  product_id: z.string().min(1, "Chọn sản phẩm."),
+  price: z.coerce.number().positive("Giá sản phẩm không hợp lệ."),
+  quantity: z.coerce.number().positive("Số lượng sản phẩm không hợp lệ."),
 });

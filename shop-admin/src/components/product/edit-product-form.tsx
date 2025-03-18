@@ -74,8 +74,6 @@ const EditProductForm = ({
       ? {
           product_name: selectedProduct.product_name,
           description: selectedProduct.description,
-          price: selectedProduct.price,
-          quantity: selectedProduct.quantity,
           category_id: selectedProduct.category_id.toString(),
           new_images: [],
           current_images: selectedProduct.current_images,
@@ -84,8 +82,6 @@ const EditProductForm = ({
       : {
           product_name: "",
           description: "",
-          price: 0,
-          quantity: 0,
           category_id: "",
           new_images: [],
           current_images: [],
@@ -204,34 +200,6 @@ const EditProductForm = ({
                   className="resize-none"
                   {...field}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* Price */}
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Giá</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* Quantity */}
-        <FormField
-          control={form.control}
-          name="quantity"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Số lượng</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -447,7 +415,7 @@ const EditProductForm = ({
             </div>
           </div>
         )}
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader className="animate-spin" />}{" "}
           {selectedProduct ? "Cập nhật" : "Thêm"} sản phẩm
         </Button>

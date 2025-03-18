@@ -61,8 +61,8 @@ export const createProduct = async (req, res) => {
 
         // Create product
         const [result] = await pool.query(
-            "INSERT INTO `product` (product_name, description, price, quantity, category_id) VALUES (?, ?, ?, ?, ?)",
-            [product.product_name, product.description, Number(product.price), Number(product.quantity), Number(product.category_id)]
+            "INSERT INTO `product` (product_name, description, category_id) VALUES (?, ?, ?)",
+            [product.product_name, product.description, Number(product.category_id)]
         );
 
         // Re-fetch product to return
@@ -125,8 +125,8 @@ export const updateProduct = async (req, res) => {
 
         // Update product
         await pool.query(
-            "UPDATE `product` SET product_name = ?, description = ?, price = ?, quantity = ?, category_id = ?, modified_date = NOW() where product_id = ?",
-            [product.product_name, product.description, Number(product.price), Number(product.quantity), Number(product.category_id), Number(product_id)]
+            "UPDATE `product` SET product_name = ?, description = ?, category_id = ?, modified_date = NOW() where product_id = ?",
+            [product.product_name, product.description, Number(product.category_id), Number(product_id)]
         );
 
         // Re-fetch category to return

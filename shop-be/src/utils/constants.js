@@ -37,6 +37,7 @@ export const RES_MESSAGES = {
     ADD_PRODUCT_TO_FAVOURITE: "Thêm sản phẩm vào danh sách yêu thích.",
 
     // COLOR
+    COLOR_NOT_EXIST: "Màu sản phẩm không tồn tại.",
     COLOR_EXIST: "Màu sản phẩm đã tồn tại.",
     CREATE_COLOR_SUCCESSFULLY: "Tạo màu sản phẩm thành công.",
     DELETE_COLOR_SUCCESSFULLY: "Xóa màu sản phẩm thành công.",
@@ -44,11 +45,19 @@ export const RES_MESSAGES = {
     UPDATE_COLOR_SUCCESSFULLY: "Cập nhật màu sản phẩm thành công.",
 
     // SIZE
+    SIZE_NOT_EXIST: "Kích thước sản phẩm không tồn tại.",
     SIZE_EXIST: "Kích cỡ sản phẩm đã tồn tại.",
     CREATE_SIZE_SUCCESSFULLY: "Tạo kích cỡ sản phẩm thành công.",
     DELETE_SIZE_SUCCESSFULLY: "Xóa kích cỡ sản phẩm thành công.",
     DELETE_SIZE_FAIL_VARIANT_EXIST: "Xóa kích cỡ sản phẩm thất bại, đang tồn tại loại sản phẩm dùng kích cỡ này.",
     UPDATE_SIZE_SUCCESSFULLY: "Cập nhật kích cỡ sản phẩm thành công.",
+
+    // VARIANT
+    VARIANT_NOT_EXIST: "Loại sản phẩm không tồn tại.",
+    VARIANT_EXIST: "Loại sản phẩm đã tồn tại.",
+    CREATE_VARIANT_SUCCESSFULLY: "Tạo loại sản phẩm thành công.",
+    DELETE_VARIANT_SUCCESSFULLY: "Xóa loại sản phẩm thành công.",
+    UPDATE_VARIANT_SUCCESSFULLY: "Cập nhật loại sản phẩm thành công.",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {

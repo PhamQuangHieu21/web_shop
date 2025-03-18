@@ -60,8 +60,6 @@ CREATE TABLE product (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    price INT NOT NULL,
-    quantity INT NOT NULL DEFAULT 0,
     category_id INT,
     modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -103,7 +101,9 @@ CREATE TABLE variant (
     FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE,
     FOREIGN KEY (color_id) REFERENCES color(color_id) ON DELETE SET NULL,
     FOREIGN KEY (size_id) REFERENCES size(size_id) ON DELETE SET NULL,
-    UNIQUE (product_id, color_id, size_id)
+    UNIQUE (product_id, color_id, size_id),
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Product Favourites

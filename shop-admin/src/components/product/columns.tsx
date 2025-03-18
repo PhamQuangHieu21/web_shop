@@ -29,18 +29,6 @@ export const columns = (
     ),
   },
   {
-    accessorKey: "price",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Giá" />
-    ),
-  },
-  {
-    accessorKey: "quantity",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Số lượng" />
-    ),
-  },
-  {
     accessorKey: "category",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Danh mục" />
