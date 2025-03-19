@@ -125,3 +125,39 @@ export const editVariantFormSchema = z.object({
   price: z.coerce.number().positive("Giá sản phẩm không hợp lệ."),
   quantity: z.coerce.number().positive("Số lượng sản phẩm không hợp lệ."),
 });
+
+export const editVoucherFormSchema = z
+  .object({
+    code: z
+      .string()
+      .min(3, { message: "Mã voucher phải có ít nhất 3 ký tự." })
+      .max(20, { message: "Mã voucher không được vượt quá 20 ký tự." }),
+    description: z.string().min(1, "Nhập mô tả."),
+    discount_type: z.enum(["percentage", "fixed"], {
+      message:
+        "Loại giảm giá không hợp lệ. Chỉ chấp nhận phần trăm hoặc cố định.",
+    }),
+    discount_value: z
+      .number()
+      .positive({ message: "Giá trị khuyến mãi phải là số dương." }),
+    min_order_value: z.number().min(0, {
+      message: "Giá trị đơn hàng tối thiểu phải lớn hơn hoặc bằng 0.",
+    }),
+    max_discount: z
+      .number()
+      .min(0, { message: "Mức giảm giá tối đa phải lớn hơn hoặc bằng 0." }),
+    quantity: z
+      .number()
+      .min(0, { message: "Số lượng phải lớn hơn hoặc bằng 0." }),
+    start_date: z.coerce.date({ message: "Ngày bắt đầu không hợp lệ." }),
+
+    end_date: z.coerce.date({ message: "Ngày kết thúc không hợp lệ." }),
+  })
+  .refine((data) => data.end_date > new Date(), {
+    message: "Ngày kết thúc phải là ngày trong tương lai.",
+    path: ["end_date"],
+  })
+  .refine((data) => data.end_date > data.start_date, {
+    message: "Ngày kết thúc phải lớn hơn ngày bắt đầu.",
+    path: ["end_date"],
+  });

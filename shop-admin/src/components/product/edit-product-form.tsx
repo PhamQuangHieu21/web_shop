@@ -196,7 +196,7 @@ const EditProductForm = ({
               <FormLabel>Mô tả</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Thêm mô tả sản phẩm..."
+                  placeholder="Mô tả sản phẩm..."
                   className="resize-none"
                   {...field}
                 />

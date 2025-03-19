@@ -5,7 +5,7 @@ const pool = mysql.createPool({
     port: 3306,
     user: "root",
     database: "shop",
-    password: "",
+    password: "nigma1357",
     charset: "utf8mb4",
 });
 

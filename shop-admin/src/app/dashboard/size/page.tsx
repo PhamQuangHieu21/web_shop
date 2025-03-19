@@ -1,11 +1,12 @@
 "use client";
 import EditSizeDialog from "@/components/size/edit-size-dialog";
 import { columns } from "@/components/size/columns";
-import { DataTable } from "@/components/size/data-table";
+import { DataTable } from "@/components/common/data-table";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/utils";
 import { Size } from "@/lib/types";
 import { toast } from "sonner";
+import SizeFilterBar from "@/components/size/size-filter-bar";
 
 export default function SizePage() {
   const [data, setData] = useState<Size[]>([]);
@@ -48,7 +49,9 @@ export default function SizePage() {
         loading={loading}
         columns={columns(setOpenEditDialog, setSelectedSize, setData)}
         data={data}
-      />
+      >
+        {(table) => <SizeFilterBar table={table} />}
+      </DataTable>
     </main>
   );
 }

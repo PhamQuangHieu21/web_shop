@@ -7,6 +7,7 @@ import {
   Settings2,
   Shirt,
   SquareKanban,
+  TicketPercent,
 } from "lucide-react";
 import {
   SidebarGroup,
@@ -63,6 +64,11 @@ const navMain = [
     title: "Đơn hàng",
     url: "/dashboard/order",
     icon: ReceiptText,
+  },
+  {
+    title: "Voucher",
+    url: "/dashboard/voucher",
+    icon: TicketPercent,
   },
   {
     title: "Settings",

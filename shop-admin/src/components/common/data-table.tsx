@@ -10,6 +10,7 @@ import {
   ColumnFiltersState,
   getSortedRowModel,
   getFilteredRowModel,
+  Table as ReactTable,
 } from "@tanstack/react-table";
 
 import {
@@ -20,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "../common/data-table-pagination";
 import { useState } from "react";
 import { Skeleton } from "../ui/skeleton";
@@ -29,12 +29,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   loading: boolean;
+  children: (table: ReactTable<TData>) => React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   loading,
+  children,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -59,18 +61,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Tìm kiếm theo tên..."
-          value={
-            (table.getColumn("color_name")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("color_name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>
+      {children(table)}
       <div className="rounded-md border mb-5">
         <Table>
           <TableHeader>

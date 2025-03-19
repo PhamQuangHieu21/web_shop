@@ -1,11 +1,12 @@
 "use client";
 import EditVariantDialog from "@/components/variant/edit-variant-dialog";
 import { columns } from "@/components/variant/columns";
-import { DataTable } from "@/components/variant/data-table";
+import { DataTable } from "@/components/common/data-table";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/utils";
 import { Variant } from "@/lib/types";
 import { toast } from "sonner";
+import VariantFilterBar from "@/components/variant/variant-filter-bar";
 
 export default function VariantPage() {
   const [data, setData] = useState<Variant[]>([]);
@@ -48,7 +49,9 @@ export default function VariantPage() {
         loading={loading}
         columns={columns(setOpenEditDialog, setSelectedVariant, setData)}
         data={data}
-      />
+      >
+        {(table) => <VariantFilterBar table={table} />}
+      </DataTable>
     </main>
   );
 }

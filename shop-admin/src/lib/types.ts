@@ -115,3 +115,30 @@ export type VariantDependencies = {
   colors: ColorForSelect[];
   sizes: SizeForSelect[];
 };
+
+export type Voucher = {
+  voucher_id: number;
+  code: string;
+  description: string;
+  discount_type: "percentage" | "fixed"; // Defines whether it's a percentage or fixed amount
+  discount_value: number; // Value of discount (percentage or fixed amount)
+  min_order_value: number; // Optional: Minimum order value to apply the voucher
+  max_discount: number; // Optional: Max discount amount (useful for percentage-based discounts)
+  quantity: number; // Total times the voucher can be used
+  start_date: Date; // Start validity date
+  end_date: Date; // End validity date
+  created_at: Date;
+  updated_at: Date;
+};
+
+export type VoucherForm = {
+  code: string;
+  description: string;
+  discount_type: "percentage" | "fixed";
+  discount_value: number;
+  min_order_value: number;
+  max_discount: number;
+  quantity: number;
+  start_date: Date;
+  end_date: Date;
+};

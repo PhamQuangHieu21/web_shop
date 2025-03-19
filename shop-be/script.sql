@@ -176,11 +176,27 @@ CREATE TABLE order_detail (
 -- Voucher
 CREATE TABLE voucher (
     voucher_id INT AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(50) NOT NULL UNIQUE,
-    discount_value DECIMAL(10,2) NOT NULL,
-    expiration_date DATE NOT NULL,
+    code VARCHAR(50) UNIQUE NOT NULL, -- Unique voucher code
+    type ENUM('fixed', 'percentage') NOT NULL, -- Type of discount
+    discount_value DECIMAL(10,2) NOT NULL, -- Discount amount (percentage or fixed)
+    min_order_value DECIMAL(10,2) DEFAULT NULL, -- Minimum order value to apply
+    max_discount DECIMAL(10,2) DEFAULT NULL, -- Max discount for percentage type
+    quantity INT DEFAULT NULL, 
+    start_date DATETIME NOT NULL, 
+    expiry_date DATETIME NOT NULL, 
     modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE voucher_usage (
+    usage_id INT AUTO_INCREMENT PRIMARY KEY,
+    voucher_id INT NOT NULL,
+    user_id INT NOT NULL,
+    order_id INT NOT NULL,
+    used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (voucher_id) REFERENCES vouchers(voucher_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE
 );
 
 

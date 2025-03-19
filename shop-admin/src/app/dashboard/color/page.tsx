@@ -1,11 +1,12 @@
 "use client";
 import EditColorDialog from "@/components/color/edit-color-dialog";
 import { columns } from "@/components/color/columns";
-import { DataTable } from "@/components/color/data-table";
+import { DataTable } from "@/components/common/data-table";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/utils";
 import { Color } from "@/lib/types";
 import { toast } from "sonner";
+import ColorFilterBar from "@/components/color/color-filter-bar";
 
 export default function ColorPage() {
   const [data, setData] = useState<Color[]>([]);
@@ -48,7 +49,9 @@ export default function ColorPage() {
         loading={loading}
         columns={columns(setOpenEditDialog, setSelectedColor, setData)}
         data={data}
-      />
+      >
+        {(table) => <ColorFilterBar table={table} />}
+      </DataTable>
     </main>
   );
 }

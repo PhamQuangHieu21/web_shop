@@ -1,11 +1,12 @@
 "use client";
 import EditProductDialog from "@/components/product/edit-product-dialog";
 import { columns } from "@/components/product/columns";
-import { DataTable } from "@/components/product/data-table";
+import { DataTable } from "@/components/common/data-table";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/utils";
 import { Product } from "@/lib/types";
 import { toast } from "sonner";
+import ProductFilterBar from "@/components/product/product-filter-bar";
 
 export default function ProductPage() {
   const [data, setData] = useState<Product[]>([]);
@@ -48,7 +49,9 @@ export default function ProductPage() {
         loading={loading}
         columns={columns(setOpenEditDialog, setSelectedProduct, setData)}
         data={data}
-      />
+      >
+        {(table) => <ProductFilterBar table={table} />}
+      </DataTable>
     </main>
   );
 }
