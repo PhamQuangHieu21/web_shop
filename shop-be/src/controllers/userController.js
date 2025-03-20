@@ -116,8 +116,6 @@ export const updateUsers = async (req, res) => {
     const { id } = req.params;
     try {
         console.log("user = " + user);
-        console.log("id = " + id);
-
         console.log("id = " + user.user_id);
         // Validate
         const [existingCategory] = await pool.query(

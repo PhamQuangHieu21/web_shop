@@ -14,6 +14,6 @@ router.get("/ping", ping);
 router.get("/getAllUsers", getAllUsers);
 router.post("/register", register);
 router.post("/login", login);
-router.post("/update/:id", updateUsers);
+router.post("/update", updateUsers);
 router.post("/updatePassword/:id", updatedPassword);
 export default router;
