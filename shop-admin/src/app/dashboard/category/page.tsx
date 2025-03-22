@@ -1,11 +1,12 @@
 "use client";
 import EditCategoryDialog from "@/components/category/edit-category-dialog";
 import { columns } from "@/components/category/columns";
-import { DataTable } from "@/components/category/data-table";
+import { DataTable } from "@/components/common/data-table";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/utils";
 import { Category } from "@/lib/types";
 import { toast } from "sonner";
+import CategoryFilterBar from "@/components/category/category-filter-bar";
 
 export default function CategoryPage() {
   const [data, setData] = useState<Category[]>([]);
@@ -48,7 +49,9 @@ export default function CategoryPage() {
         loading={loading}
         columns={columns(setOpenEditDialog, setSelectedCategory, setData)}
         data={data}
-      />
+      >
+        {(table) => <CategoryFilterBar table={table} />}
+      </DataTable>
     </main>
   );
 }
