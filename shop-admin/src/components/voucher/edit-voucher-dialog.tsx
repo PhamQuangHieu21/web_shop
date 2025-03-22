@@ -41,7 +41,12 @@ const EditVoucherDialog = ({
           <Plus /> Thêm voucher
         </Button>
       </DialogTrigger>
-      <DialogContent className="container sm:max-w-sm overflow-y-auto max-h-[80vh]">
+      <DialogContent
+        className="container sm:max-w-lg overflow-y-auto max-h-[80vh]"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>
             {selectedVoucher ? "Cập nhật" : "Thêm"} voucher

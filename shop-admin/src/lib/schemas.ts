@@ -49,7 +49,7 @@ export const editProductFormSchema = z
     description: z.string().min(1, "Nhập mô tả sản phẩm."),
     category_id: z.string().min(1, "Chọn danh mục sản phẩm."),
     current_images: z.array(z.string()).optional(),
-    new_images: z.any(),
+    new_images: z.array(z.instanceof(File)),
   })
   .refine(
     (data) => {
@@ -93,10 +93,9 @@ export const editProductFormSchema = z
   )
   .refine(
     (data) => {
-      // Ensure all files are under 10MB
       if (data.new_images?.length > 0) {
         return Array.from(data.new_images).every(
-          (file) => file && file.size <= 10000000
+          (file) => file && file.size <= 10000000 // Ensure all files are under 10MB
         );
       }
 
@@ -132,32 +131,37 @@ export const editVoucherFormSchema = z
       .string()
       .min(3, { message: "Mã voucher phải có ít nhất 3 ký tự." })
       .max(20, { message: "Mã voucher không được vượt quá 20 ký tự." }),
-    description: z.string().min(1, "Nhập mô tả."),
     discount_type: z.enum(["percentage", "fixed"], {
       message:
         "Loại giảm giá không hợp lệ. Chỉ chấp nhận phần trăm hoặc cố định.",
     }),
-    discount_value: z
+    discount_value: z.coerce
       .number()
-      .positive({ message: "Giá trị khuyến mãi phải là số dương." }),
-    min_order_value: z.number().min(0, {
-      message: "Giá trị đơn hàng tối thiểu phải lớn hơn hoặc bằng 0.",
-    }),
-    max_discount: z
+      .min(1, { message: "Giá trị khuyến mãi phải lớn hơn 0." }),
+    min_order_value: z.coerce
       .number()
-      .min(0, { message: "Mức giảm giá tối đa phải lớn hơn hoặc bằng 0." }),
-    quantity: z
+      .min(0, { message: "Đơn hàng tối thiểu phải lớn hơn hoặc bằng 0." }),
+    max_discount: z.coerce
+      .number()
+      .min(0, { message: "Khuyến mãi tối đa phải lớn hơn hoặc bằng 0." }),
+    quantity: z.coerce
       .number()
       .min(0, { message: "Số lượng phải lớn hơn hoặc bằng 0." }),
-    start_date: z.coerce.date({ message: "Ngày bắt đầu không hợp lệ." }),
-
-    end_date: z.coerce.date({ message: "Ngày kết thúc không hợp lệ." }),
+    valid_date: z.object({
+      from: z.date().optional(),
+      to: z.date().optional(),
+    }),
   })
-  .refine((data) => data.end_date > new Date(), {
-    message: "Ngày kết thúc phải là ngày trong tương lai.",
-    path: ["end_date"],
-  })
-  .refine((data) => data.end_date > data.start_date, {
-    message: "Ngày kết thúc phải lớn hơn ngày bắt đầu.",
-    path: ["end_date"],
-  });
+  .refine(
+    (data) => {
+      return (
+        data.valid_date.from &&
+        data.valid_date.to &&
+        new Date(data.valid_date.from) < new Date(data.valid_date.to)
+      );
+    },
+    {
+      message: "Ngày bắt đầu phải nhỏ hơn ngày kết thúc.",
+      path: ["valid_date"],
+    }
+  );

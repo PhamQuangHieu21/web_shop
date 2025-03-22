@@ -44,7 +44,7 @@ export const createColor = async (req, res) => {
         const [rows] = await pool.query("SELECT * FROM `color` WHERE color_id = ?", [insertedId]);
 
         res.status(200).json({
-            message: RES_MESSAGES.CREATE_COLOR_SUCCESSFULLY,
+            message: RES_MESSAGES.CREATE_COLOR_SUCCESS,
             data: rows[0],
         });
     } catch (error) {
@@ -74,7 +74,7 @@ export const deleteColor = async (req, res) => {
         await pool.query("DELETE FROM `color` WHERE color_id = ?", [id]);
 
         res.status(200).json({
-            message: RES_MESSAGES.DELETE_COLOR_SUCCESSFULLY,
+            message: RES_MESSAGES.DELETE_COLOR_SUCCESS,
             data: "",
         });
     } catch (error) {
@@ -114,7 +114,7 @@ export const updateColor = async (req, res) => {
         );
 
         res.status(200).json({
-            message: RES_MESSAGES.UPDATE_COLOR_SUCCESSFULLY,
+            message: RES_MESSAGES.UPDATE_COLOR_SUCCESS,
             data: updatedColor[0],
         });
     } catch (error) {

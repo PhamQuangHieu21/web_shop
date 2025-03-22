@@ -38,28 +38,28 @@ export const createVariant = async (req, res) => {
             "SELECT COUNT(*) AS count FROM `product` WHERE product_id = ?",
             [variant.product_id]
         );
-        const [[colorExists]] = await pool.query(
-            "SELECT COUNT(*) AS count FROM `color` WHERE color_id = ?",
-            [variant.color_id]
-        );
-        const [[sizeExists]] = await pool.query(
-            "SELECT COUNT(*) AS count FROM `size` WHERE size_id = ?",
-            [variant.size_id]
-        );
-
-        // If any entity does not exist, return an error
         if (!productExists.count) {
             return res.status(400).json({
                 message: RES_MESSAGES.PRODUCT_NOT_EXIST,
                 data: "",
             });
         }
+
+        const [[colorExists]] = await pool.query(
+            "SELECT COUNT(*) AS count FROM `color` WHERE color_id = ?",
+            [variant.color_id]
+        );
         if (!colorExists.count) {
             return res.status(400).json({
                 message: RES_MESSAGES.COLOR_NOT_EXIST,
                 data: "",
             });
         }
+
+        const [[sizeExists]] = await pool.query(
+            "SELECT COUNT(*) AS count FROM `size` WHERE size_id = ?",
+            [variant.size_id]
+        );
         if (!sizeExists.count) {
             return res.status(400).json({
                 message: RES_MESSAGES.SIZE_NOT_EXIST,
@@ -107,7 +107,7 @@ export const createVariant = async (req, res) => {
         );
 
         res.status(200).json({
-            message: RES_MESSAGES.CREATE_VARIANT_SUCCESSFULLY,
+            message: RES_MESSAGES.CREATE_VARIANT_SUCCESS,
             data: newVariant,
         });
     } catch (error) {
@@ -127,7 +127,7 @@ export const deleteVariant = async (req, res) => {
         await pool.query("DELETE FROM `variant` WHERE variant_id = ?", [id]);
 
         res.status(200).json({
-            message: RES_MESSAGES.DELETE_VARIANT_SUCCESSFULLY,
+            message: RES_MESSAGES.DELETE_VARIANT_SUCCESS,
             data: "",
         });
     } catch (error) {
@@ -208,7 +208,7 @@ export const updateVariant = async (req, res) => {
         );
 
         res.status(200).json({
-            message: RES_MESSAGES.UPDATE_VARIANT_SUCCESSFULLY,
+            message: RES_MESSAGES.UPDATE_VARIANT_SUCCESS,
             data: updatedVariant[0],
         });
     } catch (error) {

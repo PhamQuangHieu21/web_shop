@@ -44,7 +44,7 @@ export const createSize = async (req, res) => {
         const [rows] = await pool.query("SELECT * FROM `size` WHERE size_id = ?", [insertedId]);
 
         res.status(200).json({
-            message: RES_MESSAGES.CREATE_SIZE_SUCCESSFULLY,
+            message: RES_MESSAGES.CREATE_SIZE_SUCCESS,
             data: rows[0],
         });
     } catch (error) {
@@ -74,7 +74,7 @@ export const deleteSize = async (req, res) => {
         await pool.query("DELETE FROM `size` WHERE size_id = ?", [id]);
 
         res.status(200).json({
-            message: RES_MESSAGES.DELETE_SIZE_SUCCESSFULLY,
+            message: RES_MESSAGES.DELETE_SIZE_SUCCESS,
             data: "",
         });
     } catch (error) {
@@ -114,7 +114,7 @@ export const updateSize = async (req, res) => {
         );
 
         res.status(200).json({
-            message: RES_MESSAGES.UPDATE_SIZE_SUCCESSFULLY,
+            message: RES_MESSAGES.UPDATE_SIZE_SUCCESS,
             data: updatedSize[0],
         });
     } catch (error) {

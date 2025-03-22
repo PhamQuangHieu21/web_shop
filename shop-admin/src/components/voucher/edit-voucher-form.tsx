@@ -24,10 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Textarea } from "../ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
+import { vi } from "date-fns/locale";
 
 interface EditVoucherFormProps {
   setData: React.Dispatch<React.SetStateAction<Voucher[]>>;
@@ -47,25 +47,27 @@ const EditVoucherForm = ({
     defaultValues: selectedVoucher
       ? {
           code: selectedVoucher.code,
-          description: selectedVoucher.description,
           discount_type: selectedVoucher.discount_type,
           discount_value: selectedVoucher.discount_value,
           min_order_value: selectedVoucher.min_order_value,
           max_discount: selectedVoucher.max_discount,
           quantity: selectedVoucher.quantity,
-          start_date: selectedVoucher.start_date,
-          end_date: selectedVoucher.end_date,
+          valid_date: {
+            from: new Date(selectedVoucher.start_date),
+            to: new Date(selectedVoucher.end_date),
+          },
         }
       : {
           code: "",
-          description: "",
-          discount_type: "fixed", // Mặc định là 'fixed'
+          discount_type: "fixed",
           discount_value: 0,
           min_order_value: 0,
           max_discount: 0,
           quantity: 0,
-          start_date: new Date(),
-          end_date: new Date(new Date().setDate(new Date().getDate() + 1)),
+          valid_date: {
+            from: new Date(),
+            to: new Date(Date.now() + 86400000),
+          },
         },
   });
 
@@ -139,24 +141,6 @@ const EditVoucherForm = ({
             </FormItem>
           )}
         />
-        {/* Description */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mô tả</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Mô tả mã khuyến mãi..."
-                  className="resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         {/* Discount Type */}
         <FormField
           control={form.control}
@@ -210,7 +194,7 @@ const EditVoucherForm = ({
         {/* Max Discount */}
         <FormField
           control={form.control}
-          name="min_order_value"
+          name="max_discount"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Khuyến mãi tối đa</FormLabel>
@@ -235,41 +219,55 @@ const EditVoucherForm = ({
             </FormItem>
           )}
         />
-        {/* Start Date */}
+        {/* Date Picker */}
         <FormField
           control={form.control}
-          name="start_date"
+          name="valid_date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date of birth</FormLabel>
+              <FormLabel>Ngày hiệu lực</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
+                  <Button
+                    id="date"
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !field.value.from && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {field.value.from ? (
+                      field.value.to ? (
+                        <>
+                          {format(field.value.from, "LLL dd, y", {
+                            locale: vi,
+                          })}{" "}
+                          -{" "}
+                          {format(field.value.to, "LLL dd, y", {
+                            locale: vi,
+                          })}
+                        </>
                       ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
+                        format(field.value.from, "LLL dd, y", { locale: vi })
+                      )
+                    ) : (
+                      <span>Chọn một ngày</span>
+                    )}
+                  </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
                     initialFocus
+                    mode="range"
+                    defaultMonth={field.value.from!}
+                    selected={{ from: field.value.from!, to: field.value.to! }}
+                    onSelect={(range) => {
+                      console.log(range);
+                      field.onChange(range);
+                    }}
+                    numberOfMonths={2}
+                    locale={vi}
                   />
                 </PopoverContent>
               </Popover>

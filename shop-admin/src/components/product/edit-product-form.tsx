@@ -140,7 +140,8 @@ const EditProductForm = ({
   async function onSubmit(values: z.infer<typeof editProductFormSchema>) {
     let formData = new FormData();
     for (let key in values) {
-      if (key !== "new_images") formData.append(key, values[key]);
+      if (key !== "new_images")
+        formData.append(key, values[key as keyof typeof values] as string);
     }
     for (let image of values.new_images) {
       formData.append("new_images", image);

@@ -44,7 +44,7 @@ export const createCategory = async (req, res) => {
         const [rows] = await pool.query("SELECT * FROM `category` WHERE category_id = ?", [insertedId]);
 
         res.status(200).json({
-            message: RES_MESSAGES.CREATE_CATEGORY_SUCCESSFULLY,
+            message: RES_MESSAGES.CREATE_CATEGORY_SUCCESS,
             data: rows[0],
         });
     } catch (error) {
@@ -62,7 +62,7 @@ export const deleteCategory = async (req, res) => {
         await pool.query("DELETE FROM `category` WHERE category_id = ?", [id]);
 
         res.status(200).json({
-            message: RES_MESSAGES.DELETE_CATEGORY_SUCCESSFULLY,
+            message: RES_MESSAGES.DELETE_CATEGORY_SUCCESS,
             data: "",
         });
     } catch (error) {
@@ -103,7 +103,7 @@ export const updateCategory = async (req, res) => {
         );
 
         res.status(200).json({
-            message: RES_MESSAGES.UPDATE_CATEGORY_SUCCESSFULLY,
+            message: RES_MESSAGES.UPDATE_CATEGORY_SUCCESS,
             data: updatedCategory[0],
         });
     } catch (error) {

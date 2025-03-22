@@ -81,7 +81,7 @@ export const createProduct = async (req, res) => {
         rows[0].current_images = product.new_images;
 
         res.status(200).json({
-            message: RES_MESSAGES.CREATE_PRODUCT_SUCCESSFULLY,
+            message: RES_MESSAGES.CREATE_PRODUCT_SUCCESS,
             data: rows[0],
         });
     } catch (error) {
@@ -174,7 +174,7 @@ export const updateProduct = async (req, res) => {
         }
 
         res.status(200).json({
-            message: RES_MESSAGES.UPDATE_PRODUCT_SUCCESSFULLY,
+            message: RES_MESSAGES.UPDATE_PRODUCT_SUCCESS,
             data: returnedProduct[0],
         });
     } catch (error) {
@@ -197,7 +197,7 @@ export const deleteProduct = async (req, res) => {
         await pool.query("DELETE FROM `product` WHERE product_id = ?", [id]);
 
         res.status(200).json({
-            message: RES_MESSAGES.DELETE_PRODUCT_SUCCESSFULLY,
+            message: RES_MESSAGES.DELETE_PRODUCT_SUCCESS,
             data: "",
         });
     } catch (error) {

@@ -119,7 +119,6 @@ export type VariantDependencies = {
 export type Voucher = {
   voucher_id: number;
   code: string;
-  description: string;
   discount_type: "percentage" | "fixed"; // Defines whether it's a percentage or fixed amount
   discount_value: number; // Value of discount (percentage or fixed amount)
   min_order_value: number; // Optional: Minimum order value to apply the voucher
@@ -133,12 +132,10 @@ export type Voucher = {
 
 export type VoucherForm = {
   code: string;
-  description: string;
   discount_type: "percentage" | "fixed";
   discount_value: number;
   min_order_value: number;
   max_discount: number;
   quantity: number;
-  start_date: Date;
-  end_date: Date;
+  valid_date: { from?: Date; to?: Date };
 };

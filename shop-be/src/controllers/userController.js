@@ -46,7 +46,7 @@ export const register = async (req, res) => {
         );
 
         res.status(200).json({
-            message: RES_MESSAGES.REGISTER_USER_SUCCESSFULLY,
+            message: RES_MESSAGES.REGISTER_USER_SUCCESS,
             data: "",
         });
     } catch (error) {
@@ -82,7 +82,7 @@ export const login = async (req, res) => {
         if (auth.currentUser && auth.currentUser.emailVerified) {
             delete existingUser[0].password;
             res.status(200).json({
-                message: RES_MESSAGES.USER_LOGIN_SUCCESSFULLY,
+                message: RES_MESSAGES.USER_LOGIN_SUCCESS,
                 data: existingUser[0],
             });
         }
@@ -137,7 +137,7 @@ export const updateUsers = async (req, res) => {
         );
 
         res.status(200).json({
-            message: RES_MESSAGES.UPDATE_PRODUCT_SUCCESSFULLY,
+            message: RES_MESSAGES.UPDATE_PRODUCT_SUCCESS,
             data: [],
         });
     } catch (error) {
@@ -175,7 +175,7 @@ export const updatedPassword = async (req, res) => {
 
         // Update the password
         await updatePassword(currentUser, passwordNew);
-        console.log("Password updated successfully in Firebase");
+        console.log("Password updated SUCCESS in Firebase");
 
         // Hash the new password
         const hashedPassword = await bcrypt.hash(passwordNew, 12);
@@ -186,11 +186,11 @@ export const updatedPassword = async (req, res) => {
             [hashedPassword, id]
         );
 
-        console.log("Password updated successfully in the database");
+        console.log("Password updated SUCCESS in the database");
 
         // Send a success response
         res.status(200).send({
-            message: "Password updated successfully",
+            message: "Password updated SUCCESS",
             data: "",
         });
     } catch (error) {

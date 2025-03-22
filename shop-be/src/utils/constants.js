@@ -5,16 +5,16 @@ export const RES_MESSAGES = {
     SERVER_ERROR: "Đã xảy ra lỗi từ phía server. Quý khách vui lòng thử lại sau.",
 
     // USER
-    USER_LOGIN_SUCCESSFULLY: "Đăng nhập thành công",
-    REGISTER_USER_SUCCESSFULLY: "Đăng ký tài khoản thành công. Vui lòng truy cập email đã đăng ký để xác thực tài khoản.",
+    USER_LOGIN_SUCCESS: "Đăng nhập thành công",
+    REGISTER_USER_SUCCESS: "Đăng ký tài khoản thành công. Vui lòng truy cập email đã đăng ký để xác thực tài khoản.",
     USERNAME_EXIST: "Email đã tồn tại.",
     PHONE_EXIST: "Số điện thoại đã tồn tại.",
     WRONG_USERNAME_PASSWORD: "Sai tài khoản hoặc mật khẩu.",
     USER_BANNED: "Your account is banned, contact administrator for details",
     AUTHENTICATION_FAILED: "Please login to use this function",
     OLD_PASSWORD_WRONG: "Old password is incorrect",
-    CHANGE_PASSWORD_SUCCESSFULLY: "Changed password successfully",
-    UPDATE_USER_SUCCESSFULLY: "Updated user information successfully",
+    CHANGE_PASSWORD_SUCCESS: "Changed password SUCCESS",
+    UPDATE_USER_SUCCESS: "Updated user information SUCCESS",
     UNVERIFIED_ACCOUNT: "Vui lòng xác thực tài khoản qua email trước khi đăng nhập.",
     USERNAME_NOT_EXIST: "Username does not exist",
     INVALID_EMAIL: "Email không hợp lệ.",
@@ -24,40 +24,47 @@ export const RES_MESSAGES = {
 
     // CATEGORY
     CATEGORY_NAME_EXIST: "Tên danh mục đã tồn tại",
-    CREATE_CATEGORY_SUCCESSFULLY: "Tạo danh mục sản phẩm thành công.",
-    DELETE_CATEGORY_SUCCESSFULLY: "Xóa danh mục sản phẩm thành công.",
-    UPDATE_CATEGORY_SUCCESSFULLY: "Cập nhật danh mục sản phẩm thành công.",
+    CREATE_CATEGORY_SUCCESS: "Tạo danh mục sản phẩm thành công.",
+    DELETE_CATEGORY_SUCCESS: "Xóa danh mục sản phẩm thành công.",
+    UPDATE_CATEGORY_SUCCESS: "Cập nhật danh mục sản phẩm thành công.",
     CATEGORY_NAME_NOT_EXIST: "Không tồn tại danh mục sản phẩm.",
 
     // PRODUCT
-    DELETE_PRODUCT_SUCCESSFULLY: "Xóa sản phẩm thành công.",
+    DELETE_PRODUCT_SUCCESS: "Xóa sản phẩm thành công.",
     PRODUCT_NOT_EXIST: "Không tồn tại sản phẩm.",
-    CREATE_PRODUCT_SUCCESSFULLY: "Tạo sản phẩm thành công.",
-    UPDATE_PRODUCT_SUCCESSFULLY: "Cập nhật sản phẩm thành công.",
+    CREATE_PRODUCT_SUCCESS: "Tạo sản phẩm thành công.",
+    UPDATE_PRODUCT_SUCCESS: "Cập nhật sản phẩm thành công.",
     ADD_PRODUCT_TO_FAVOURITE: "Thêm sản phẩm vào danh sách yêu thích.",
 
     // COLOR
     COLOR_NOT_EXIST: "Màu sản phẩm không tồn tại.",
     COLOR_EXIST: "Màu sản phẩm đã tồn tại.",
-    CREATE_COLOR_SUCCESSFULLY: "Tạo màu sản phẩm thành công.",
-    DELETE_COLOR_SUCCESSFULLY: "Xóa màu sản phẩm thành công.",
+    CREATE_COLOR_SUCCESS: "Tạo màu sản phẩm thành công.",
+    DELETE_COLOR_SUCCESS: "Xóa màu sản phẩm thành công.",
     DELETE_COLOR_FAIL_VARIANT_EXIST: "Xóa màu sản phẩm thất bại, đang tồn tại loại sản phẩm dùng màu sắc này.",
-    UPDATE_COLOR_SUCCESSFULLY: "Cập nhật màu sản phẩm thành công.",
+    UPDATE_COLOR_SUCCESS: "Cập nhật màu sản phẩm thành công.",
 
     // SIZE
     SIZE_NOT_EXIST: "Kích thước sản phẩm không tồn tại.",
     SIZE_EXIST: "Kích cỡ sản phẩm đã tồn tại.",
-    CREATE_SIZE_SUCCESSFULLY: "Tạo kích cỡ sản phẩm thành công.",
-    DELETE_SIZE_SUCCESSFULLY: "Xóa kích cỡ sản phẩm thành công.",
+    CREATE_SIZE_SUCCESS: "Tạo kích cỡ sản phẩm thành công.",
+    DELETE_SIZE_SUCCESS: "Xóa kích cỡ sản phẩm thành công.",
     DELETE_SIZE_FAIL_VARIANT_EXIST: "Xóa kích cỡ sản phẩm thất bại, đang tồn tại loại sản phẩm dùng kích cỡ này.",
-    UPDATE_SIZE_SUCCESSFULLY: "Cập nhật kích cỡ sản phẩm thành công.",
+    UPDATE_SIZE_SUCCESS: "Cập nhật kích cỡ sản phẩm thành công.",
 
     // VARIANT
     VARIANT_NOT_EXIST: "Loại sản phẩm không tồn tại.",
     VARIANT_EXIST: "Loại sản phẩm đã tồn tại.",
-    CREATE_VARIANT_SUCCESSFULLY: "Tạo loại sản phẩm thành công.",
-    DELETE_VARIANT_SUCCESSFULLY: "Xóa loại sản phẩm thành công.",
-    UPDATE_VARIANT_SUCCESSFULLY: "Cập nhật loại sản phẩm thành công.",
+    CREATE_VARIANT_SUCCESS: "Tạo loại sản phẩm thành công.",
+    DELETE_VARIANT_SUCCESS: "Xóa loại sản phẩm thành công.",
+    UPDATE_VARIANT_SUCCESS: "Cập nhật loại sản phẩm thành công.",
+
+    // VOUCHER
+    VOUCHER_NOT_EXIST: "Voucher không tồn tại.",
+    VOUCHER_CODE_EXIST: "Mã voucher đã tồn tại.",
+    CREATE_VOUCHER_SUCCESS: "Tạo voucher thành công.",
+    DELETE_VOUCHER_SUCCESS: "Xóa voucher thành công.",
+    UPDATE_VOUCHER_SUCCESS: "Cập nhật voucher thành công.",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {
