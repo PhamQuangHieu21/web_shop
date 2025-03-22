@@ -49,7 +49,7 @@ export const editProductFormSchema = z
     description: z.string().min(1, "Nhập mô tả sản phẩm."),
     category_id: z.string().min(1, "Chọn danh mục sản phẩm."),
     current_images: z.array(z.string()).optional(),
-    new_images: z.array(z.instanceof(File)),
+    new_images: z.any(),
   })
   .refine(
     (data) => {

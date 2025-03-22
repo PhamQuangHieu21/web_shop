@@ -232,3 +232,63 @@ export const addProductToFavourite = async (req, res) => {
         });
     }
 };
+
+// App api
+export const getProductDetail = async (req, res) => {
+    const { id } = req.params;
+    console.log(id)
+    try {
+        // Validate
+        const [[existingProduct]] = await pool.query(
+            "SELECT * FROM `product` WHERE product_id = ?",
+            [id]
+        );
+        if (!existingProduct) {
+            return res.status(404).send({
+                message: RES_MESSAGES.PRODUCT_NOT_EXIST,
+                data: "",
+            });
+        }
+
+        // Fetch images
+        existingProduct.images = [];
+        const [images] = await pool.query(
+            "SELECT * FROM `product_image` WHERE product_id = ?",
+            [existingProduct.product_id]
+        );
+        if (images.length > 0) {
+            for (let image of images) {
+                existingProduct.images.push(image.image_url);
+            }
+        }
+
+        // Fetch variants
+        const [variants] = await pool.query(
+            `SELECT 
+                v.variant_id, 
+                s.size_name, 
+                c.color_name, 
+                v.price, v.quantity
+             FROM variant v
+             JOIN product p ON v.product_id = ?
+             JOIN color c ON v.color_id = c.color_id
+             JOIN size s ON v.size_id = s.size_id`,
+            [existingProduct.product_id]
+        );
+
+        existingProduct.variants = variants;
+
+        setTimeout(() => {
+            res.status(200).json({
+                message: "",
+                data: existingProduct,
+            });
+        }, 500);
+    } catch (error) {
+        console.log("productController::getProductDetails => error: " + error);
+        res.status(500).send({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: "",
+        });
+    }
+};

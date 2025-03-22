@@ -21,6 +21,7 @@ export const RES_MESSAGES = {
     WEAK_PASSWORD: "Mật khẩu chứa ít nhất 6 kí tự.",
     FIND_PASSWORD_RESET_MAIL: "Please check your mailbox to find reset password mail",
     INVALID_USER_ROLE: "Vai trò người dùng không hợp lệ.",
+    USER_NOT_EXIST: "Không tồn tại người dùng.",
 
     // CATEGORY
     CATEGORY_NAME_EXIST: "Tên danh mục đã tồn tại",
@@ -65,6 +66,18 @@ export const RES_MESSAGES = {
     CREATE_VOUCHER_SUCCESS: "Tạo voucher thành công.",
     DELETE_VOUCHER_SUCCESS: "Xóa voucher thành công.",
     UPDATE_VOUCHER_SUCCESS: "Cập nhật voucher thành công.",
+
+    // REVIEW
+    REVIEW_NOT_EXIST: "Đánh giá không tồn tại.",
+    REVIEW_EXIST: "Không thể đánh giá sản phẩm nhiều lần.",
+    CREATE_REVIEW_SUCCESS: "Đánh giá sản phẩm thành công.",
+    DELETE_REVIEW_SUCCESS: "Xóa đánh giá thành công.",
+    UPDATE_REVIEW_SUCCESS: "Cập nhật đánh giá thành công.",
+
+    // CART
+    CART_NOT_EXIST: "Giỏ hàng không tồn tại.",
+    DELETE_CART_SUCCESS: "Xóa giỏ hàng thành công.",
+    UPDATE_CART_SUCCESS: "Cập nhật giỏ hàng thành công.",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {

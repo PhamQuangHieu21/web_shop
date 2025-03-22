@@ -7,6 +7,8 @@ import colorRoutes from "./colorRoute.js"
 import sizeRoutes from "./sizeRoute.js"
 import variantRoutes from "./variantRoute.js"
 import voucherRoutes from "./voucherRoute.js"
+import reviewRoutes from "./reviewRoute.js"
+import cartRoutes from "./cartRoute.js"
 
 const router = express.Router();
 
@@ -17,6 +19,8 @@ router.use("/color", colorRoutes);
 router.use("/size", sizeRoutes);
 router.use("/variant", variantRoutes);
 router.use("/voucher", voucherRoutes);
+router.use("/review", reviewRoutes);
+router.use("/cart", cartRoutes);
 
 
 export default router;

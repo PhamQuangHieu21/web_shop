@@ -114,27 +114,17 @@ CREATE TABLE product_favourite (
     FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
-
 -- Cart
 CREATE TABLE cart (
     cart_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    cart_status VARCHAR(20) NOT NULL DEFAULT 'active',
+    user_id INT NOT NULL,
+    variant_id INT NOT NULL,
+    quantity INT NOT NULL CHECK (quantity > 0),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Cart Detail
-CREATE TABLE cart_detail (
-    cart_detail_id INT AUTO_INCREMENT PRIMARY KEY,
-    cart_id INT,
-    product_id INT,
-    quantity INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (cart_id) REFERENCES cart(cart_id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE,
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (variant_id) REFERENCES variant(variant_id) ON DELETE CASCADE,
+    UNIQUE (user_id, variant_id) -- Ensures a user can't add the same variant multiple times
 );
 
 -- Review
