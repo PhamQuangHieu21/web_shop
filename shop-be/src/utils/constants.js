@@ -36,6 +36,8 @@ export const RES_MESSAGES = {
     CREATE_PRODUCT_SUCCESS: "Tạo sản phẩm thành công.",
     UPDATE_PRODUCT_SUCCESS: "Cập nhật sản phẩm thành công.",
     ADD_PRODUCT_TO_FAVOURITE: "Thêm sản phẩm vào danh sách yêu thích.",
+    DELETE_PRODUCT_TO_FAVOURITE: "Xóa sản phẩm vào danh sách yêu thích.",
+    ALL_PRODUCT: "Lấy tất cả sản phẩm vào danh sách yêu thích.",
 
     // COLOR
     COLOR_NOT_EXIST: "Màu sản phẩm không tồn tại.",

@@ -218,12 +218,34 @@ export const addProductToFavourite = async (req, res) => {
         });
     }
     try {
-        setTimeout(() => {
-            res.status(200).json({
-                message: RES_MESSAGES.ADD_PRODUCT_TO_FAVOURITE,
+        const [productFavorite] = await pool.query("SELECT * FROM `product_favourite` WHERE product_id = ? and user_id = ?", [data.product_id, data.user_id]);
+        if (productFavorite.length > 0) {
+            await pool.query("DELETE FROM `product_favourite` WHERE product_id = ? and user_id = ?", [data.product_id, data.user_id]);
+            res.status(200).send({
+                message: RES_MESSAGES.DELETE_PRODUCT_TO_FAVOURITE,
                 data: "",
             });
-        }, 500);
+        } else {
+            const [result] = await pool.query(
+                "INSERT INTO `product_favourite` (product_id, user_id) VALUES (?, ?)",
+                [data.product_id, data.user_id]
+            );
+
+            if (result.affectedRows > 0) {
+                res.status(200).send({
+                    message: RES_MESSAGES.ADD_PRODUCT_TO_FAVOURITE,
+                    data: "",
+                });
+            } else {
+                res.status(500).send({
+                    message: RES_MESSAGES.SERVER_ERROR,
+                    data: "",
+                });
+            }
+
+
+        }
+
     } catch (error) {
         console.log("productController::addProductToFavourite => error: " + error);
         res.status(500).send({
@@ -232,6 +254,55 @@ export const addProductToFavourite = async (req, res) => {
         });
     }
 };
+
+export const getAllProductsFavourite = async (req, res) => {
+    const { id } = req.params;
+    console.log("userId = " + id);
+
+    const query = `
+        SELECT 
+            f.product_id,
+            f.user_id,
+            p.product_name,
+            p.description,
+            p.category_id,
+            GROUP_CONCAT(v.image_url, ',') AS image_urls,
+            COUNT(*) OVER() AS total_records
+        FROM 
+            product_favourite f
+        JOIN 
+            product p ON f.product_id = p.product_id
+        INNER JOIN 
+            product_image v ON p.product_id = v.product_id
+        WHERE 
+            f.user_id = ?
+        GROUP BY 
+            f.product_id, f.user_id, p.product_name, p.description, p.category_id;
+    `;
+
+    try {
+        const [result] = await pool.query(query, [id]);
+        // Transforming image_urls to arrays
+        const response = result.map(row => ({
+            ...row,
+            image_urls: row.image_urls ? row.image_urls.split(',') : [],
+        }));
+
+        res.status(200).send({
+            message: RES_MESSAGES.ALL_PRODUCT,
+            data: response,
+        });
+
+    } catch (error) {
+        console.error('Error executing query:', error);
+        res.status(500).send({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: response,
+        });
+    }
+
+};
+
 
 // App api
 export const getProductDetail = async (req, res) => {
