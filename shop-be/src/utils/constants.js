@@ -1,6 +1,15 @@
 export const PORT = 5000;
 export const SERVER_URL = `http://localhost:${PORT}`;
 
+export const DISCOUNT_TYPE = {
+    PERCENTAGE: "percentage",
+    FIXED: "fixed",
+}
+
+export function isValidOrderStatus(status) {
+    return ['pending', 'paid', 'completed', 'cancelled'].includes(status);
+}
+
 export const RES_MESSAGES = {
     SERVER_ERROR: "Đã xảy ra lỗi từ phía server. Quý khách vui lòng thử lại sau.",
 
@@ -82,6 +91,12 @@ export const RES_MESSAGES = {
     CART_NOT_EXIST: "Giỏ hàng không tồn tại.",
     DELETE_CART_SUCCESS: "Xóa giỏ hàng thành công.",
     UPDATE_CART_SUCCESS: "Cập nhật giỏ hàng thành công.",
+
+    // ORDER
+    ORDER_AMOUNT_LESS_THAN_VOUCHER: "Giá trị đơn hàng không đạt yêu cầu của voucher.",
+    CREATE_ORDER_SUCCESS: "Tạo đơn hàng thành công",
+    INVALID_ORDER_STATUS: "Trạng thái đơn hàng gửi lên không hợp lệ.",
+    ORDER_NOT_EXIST: "Đơn hàng không tồn tại",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {
