@@ -33,6 +33,43 @@ export const getAllReviewsByProduct = async (req, res) => {
     }
 };
 
+export const getAllReviewsByProductByUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [reviews] = await pool.query(
+            `SELECT 
+                r.review_id, 
+                u.full_name AS user_name, 
+                r.product_id, 
+                p.product_name,
+                (SELECT pi.image_url 
+                FROM product_image pi 
+                WHERE pi.product_id = p.product_id 
+                LIMIT 1) AS product_image,
+                r.content, 
+                r.number_of_stars, 
+                r.created_date, 
+                r.modified_date
+            FROM review r
+            INNER JOIN product p on p.product_id = r.product_id
+            INNER JOIN user u ON r.user_id = u.user_id
+            WHERE r.user_id = ?`,
+            [id]
+        );
+
+        res.status(200).json({
+            message: "",
+            data: reviews,
+        });
+    } catch (error) {
+        console.log("reviewController::getAllReviews => error: " + error);
+        res.status(500).json({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: "",
+        });
+    }
+};
+
 export const createReview = async (req, res) => {
     const review = req.body;
     try {
