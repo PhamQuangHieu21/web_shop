@@ -22,6 +22,8 @@ export const RES_MESSAGES = {
     FIND_PASSWORD_RESET_MAIL: "Please check your mailbox to find reset password mail",
     INVALID_USER_ROLE: "Vai trò người dùng không hợp lệ.",
     USER_NOT_EXIST: "Không tồn tại người dùng.",
+    RESET_PASSWORD: "Vui lòng kiểm tra email để thay đổi mật khẩu.",
+
 
     // CATEGORY
     CATEGORY_NAME_EXIST: "Tên danh mục đã tồn tại",

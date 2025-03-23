@@ -3,6 +3,12 @@ import { RES_MESSAGES } from "../utils/constants.js";
 import { auth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "../config/firebase.js";
 import { firebaseAuthErrorHandler, isValidRole } from "../utils/validator.js";
 import pool from "../config/database.js";
+import {
+    EmailAuthCredential, EmailAuthProvider, getAuth, reauthenticateWithCredential, updateCurrentUser, updatePassword,
+    sendPasswordResetEmail
+} from "firebase/auth";
+import { log } from "console";
+import { json } from "stream/consumers";
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 
 //#region Admin apis
