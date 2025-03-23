@@ -4,6 +4,9 @@ import { deleteImages } from "../utils/operator.js";
 
 export const getAllProducts = async (req, res) => {
     try {
+
+        const { id } = req.params
+
         const [products] = await pool.query(
             "SELECT * FROM `product`",
         );
@@ -30,6 +33,12 @@ export const getAllProducts = async (req, res) => {
                     product.current_images.push(image.image_url);
                 }
             }
+            const [product_favorites] = await pool.query(
+                "SELECT * FROM `product_favourite` WHERE product_id = ? and user_id = ?",
+                [product.product_id, id]
+            );
+            if (product_favorites.length > 0) product.isFavourite = true;
+            else product.isFavourite = false;
         }
 
         res.status(200).json({

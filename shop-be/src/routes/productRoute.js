@@ -4,7 +4,7 @@ import { productImageUploader } from "../middlewares/uploader.js";
 
 const router = express.Router();
 
-router.get("/list", getAllProducts);
+router.get("/list/:id", getAllProducts);
 router.get("/list_like/:id", getAllProductsFavourite);
 
 router.post("/like", addProductToFavourite);
