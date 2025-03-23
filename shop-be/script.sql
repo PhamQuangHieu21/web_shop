@@ -15,7 +15,7 @@ CREATE TABLE notification_token (
     token_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT UNIQUE  NOT NULL,
     token TEXT NOT NULL,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Notification 

@@ -5,14 +5,24 @@ import { firebaseAuthErrorHandler, isValidRole } from "../utils/validator.js";
 import pool from "../config/database.js";
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 
-export const ping = async (req, res) => {
+//#region Admin apis
+export const getAllUsersByAdmin = async (req, res) => {
     try {
-        res.status(200).send("OKAY");
+        const [usersList] = await pool.query("SELECT * FROM `user` WHERE role != 'admin'",);
+
+        res.status(200).json({
+            message: "",
+            data: usersList,
+        });
     } catch (error) {
-        console.log("userController::ping => error: " + error);
-        res.status(500).send("ERROR");
+        console.log("userController::getAllUsersByAdmin => error: " + error);
+        res.status(500).send({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: "",
+        });
     }
-};
+}
+//#endregion
 
 export const register = async (req, res) => {
     const user = req.body;
@@ -56,7 +66,6 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     const user = req.body;
-    console.log("LOGIN")
     try {
         // Validate
         const [existingUser] = await pool.query(
@@ -69,6 +78,7 @@ export const login = async (req, res) => {
                 data: "",
             });
         }
+
         const isPasswordCorrect = await bcrypt.compare(user.password, existingUser[0].password);
         if (!isPasswordCorrect)
             return res.status(401).send({
@@ -104,20 +114,7 @@ export const login = async (req, res) => {
     }
 }
 
-export const getAllUsers = async (req, res) => {
-    const user = req.body;
-    try {
-        // Validate
-        const [usersList] = await pool.query("SELECT * FROM `user`",);
 
-        res.status(200).json({
-            message: "",
-            data: usersList,
-        });
-    } catch (error) {
-        console.log("userController::getAllUsers => error: " + error);
-    }
-}
 
 export const updateUsers = async (req, res) => {
     const user = req.body;

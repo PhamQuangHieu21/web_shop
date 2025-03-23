@@ -127,7 +127,6 @@ const EditVariantForm = ({
   }
 
   async function onSubmit(values: z.infer<typeof editVariantFormSchema>) {
-    console.log(values);
     if (selectedVariant) {
       await updateVariant(values);
     } else {

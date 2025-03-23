@@ -116,7 +116,6 @@ const EditVoucherForm = ({
   }
 
   async function onSubmit(values: z.infer<typeof editVoucherFormSchema>) {
-    console.log(values);
     if (selectedVoucher) {
       await updateVoucher(values);
     } else {
@@ -263,7 +262,6 @@ const EditVoucherForm = ({
                     defaultMonth={field.value.from!}
                     selected={{ from: field.value.from!, to: field.value.to! }}
                     onSelect={(range) => {
-                      console.log(range);
                       field.onChange(range);
                     }}
                     numberOfMonths={2}

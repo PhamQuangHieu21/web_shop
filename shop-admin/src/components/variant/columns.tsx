@@ -19,11 +19,14 @@ export const columns = (
   {
     accessorKey: "product_name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="product_name" />
+      <DataTableColumnHeader column={column} title="Tên sản phẩm" />
     ),
   },
   {
     accessorKey: "color_name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Màu sắc" />
+    ),
     cell: ({ row }) => {
       return (
         <div className="flex items-center">
@@ -39,7 +42,7 @@ export const columns = (
   {
     accessorKey: "size_name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="size_name" />
+      <DataTableColumnHeader column={column} title="Kích cỡ" />
     ),
   },
   {

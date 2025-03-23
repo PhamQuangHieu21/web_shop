@@ -45,10 +45,10 @@ export type UserSignupForm = {
 
 export type User = {
   user_id: number;
+  email: string;
   full_name: string;
   phone_number: string;
   address: string;
-  email: string;
   role: string;
 };
 

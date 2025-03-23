@@ -1,6 +1,7 @@
 import { RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
 
+//#region Web api
 export const getAllOrdersByAdmin = async (req, res) => {
     try {
         const [orders] = await pool.query(
@@ -19,3 +20,6 @@ export const getAllOrdersByAdmin = async (req, res) => {
         });
     }
 };
+//#endregion
+
+//#region App api
