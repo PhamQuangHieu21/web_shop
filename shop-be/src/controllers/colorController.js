@@ -12,7 +12,7 @@ export const getAllColors = async (req, res) => {
             data: colors,
         });
     } catch (error) {
-        console.log("colorController::ping => error: " + error);
+        console.log("colorController::getAllColors => error: " + error);
         res.status(500).json({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",

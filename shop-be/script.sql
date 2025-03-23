@@ -1,5 +1,3 @@
-
-
 -- User
 CREATE TABLE user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -13,15 +11,22 @@ CREATE TABLE user (
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Notification
-CREATE TABLE notification (
+CREATE TABLE notification_token (
+    token_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNIQUE  NOT NULL,
+    token TEXT NOT NULL,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+);
+
+-- Notification 
+CREATE TABLE user_notification (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    content TEXT NOT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'unread',
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
 -- Chat
@@ -34,16 +39,32 @@ CREATE TABLE chat (
 );
 
 -- Order
-CREATE TABLE orders (
+CREATE TABLE `order` (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    total_money DECIMAL(10,2) NOT NULL,
-    status_order VARCHAR(20) NOT NULL DEFAULT 'pending',
-    payment_method VARCHAR(50) NOT NULL,
-    price_selling DECIMAL(10,2) NOT NULL,
+    user_id INT NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    discount_amount DECIMAL(10,2) DEFAULT 0, -- Discount amount from voucher
+    final_price DECIMAL(10,2) NOT NULL, -- Total price after discount
+    voucher_id INT DEFAULT NULL, -- Reference to the voucher applied
+    status ENUM('pending', 'paid', 'shipped', 'completed', 'cancelled') DEFAULT 'pending',
+    payment_method ENUM('cod', 'credit_card', 'paypal') NOT NULL,
+    shipping_address TEXT NOT NULL,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (voucher_id) REFERENCES voucher(voucher_id) ON DELETE SET NULL -- If voucher is deleted, keep order valid
+);
+
+-- Order Item
+CREATE TABLE order_item (
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    variant_id INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    quantity INT NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES `order`(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (variant_id) REFERENCES variant(variant_id) ON DELETE CASCADE
 );
 
 -- Category
@@ -146,7 +167,7 @@ CREATE TABLE invoice (
     order_id INT,
     invoice_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     total_money DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES `order`(order_id) ON DELETE CASCADE,
     modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -157,7 +178,7 @@ CREATE TABLE order_detail (
     order_id INT,
     product_id INT,
     quantity INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES `order`(order_id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE,
     modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -186,7 +207,7 @@ CREATE TABLE voucher_usage (
     used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (voucher_id) REFERENCES voucher(voucher_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES `order`(order_id) ON DELETE CASCADE
 );
 
 

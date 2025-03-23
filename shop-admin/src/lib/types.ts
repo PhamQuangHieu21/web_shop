@@ -139,3 +139,39 @@ export type VoucherForm = {
   quantity: number;
   valid_date: { from?: Date; to?: Date };
 };
+
+export type OrderStatus =
+  | "pending"
+  | "paid"
+  | "shipped"
+  | "completed"
+  | "cancelled";
+export type PaymentMethod = "cod" | "credit_card" | "paypal";
+
+export type OrderItem = {
+  order_item_id: number;
+  variant_id: number;
+  price: number;
+  quantity: number;
+  subtotal: number;
+};
+
+export type Order = {
+  order_id: number;
+  user_id: number;
+  total_price: number;
+  voucher_id?: number; // Nullable, since some orders may not have a voucher
+  discount_amount: number; // Discount amount from voucher (if any)
+  final_price: number; // Total price after discount
+  status: OrderStatus;
+  payment_method: PaymentMethod;
+  shipping_address: string;
+  created_date: Date;
+  modified_date: Date;
+  // items: OrderItem[]; // List of order items
+};
+
+export type OrderForm = {
+  order_id: number;
+  payment_method: PaymentMethod;
+};

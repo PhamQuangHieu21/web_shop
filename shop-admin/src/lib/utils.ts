@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { SERVER_URL } from "./data";
-import { ApiResponse } from "./types";
+import { ApiResponse, OrderStatus } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -92,4 +92,26 @@ export const formatDateWithoutHour = (date: string | Date): string => {
 
 export function formatNumber(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+const ORDER_STATUS_VIETNAMESE: Record<string, string> = {
+  pending: "Chờ xác nhận",
+  paid: "Đã thanh toán",
+  shipped: "Đã giao hàng",
+  completed: "Hoàn thành",
+  cancelled: "Đã hủy",
+};
+
+export const PAYMENT_METHOD_VIETNAMESE: Record<string, string> = {
+  cod: "Thanh toán khi nhận hàng",
+  credit_card: "Thẻ tín dụng",
+  paypal: "PayPal",
+};
+
+export function getOrderStatusInVietnamese(preOrderStatus: OrderStatus) {
+  return ORDER_STATUS_VIETNAMESE[preOrderStatus] || "Không xác định";
+}
+
+export function getPaymenMethodInVietnamese(prePaymentMethod: OrderStatus) {
+  return PAYMENT_METHOD_VIETNAMESE[prePaymentMethod] || "Không xác định";
 }

@@ -1,10 +1,9 @@
 import bcrypt from "bcryptjs";
 import { RES_MESSAGES } from "../utils/constants.js";
-import { auth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "../../firebase.js";
+import { auth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "../config/firebase.js";
 import { firebaseAuthErrorHandler, isValidRole } from "../utils/validator.js";
 import pool from "../config/database.js";
-import { EmailAuthCredential, EmailAuthProvider, getAuth, reauthenticateWithCredential, updateCurrentUser, updatePassword } from "firebase/auth";
-import { log } from "console";
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 
 export const ping = async (req, res) => {
     try {
@@ -57,6 +56,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     const user = req.body;
+    console.log("LOGIN")
     try {
         // Validate
         const [existingUser] = await pool.query(
@@ -80,6 +80,14 @@ export const login = async (req, res) => {
         await signInWithEmailAndPassword(auth, user.email, user.password);
 
         if (auth.currentUser && auth.currentUser.emailVerified) {
+            // Save device token for firebase notification
+            // await pool.query(
+            //     `INSERT INTO user (user_id, token)
+            //         VALUES (?, ?)
+            //         ON DUPLICATE KEY UPDATE token = ?, created_date = CURRENT_TIMESTAMP`,
+            //     [existingUser[0].user_id, user.token, user.token]
+            // );
+
             delete existingUser[0].password;
             res.status(200).json({
                 message: RES_MESSAGES.USER_LOGIN_SUCCESS,

@@ -165,3 +165,8 @@ export const editVoucherFormSchema = z
       path: ["valid_date"],
     }
   );
+
+export const editOrderFormSchema = z.object({
+  order_id: z.string(),
+  payment_method: z.enum(["cod", "credit_card", "paypal"]),
+});

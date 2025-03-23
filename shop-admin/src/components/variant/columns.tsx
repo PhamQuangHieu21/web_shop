@@ -24,9 +24,17 @@ export const columns = (
   },
   {
     accessorKey: "color_name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="color_name" />
-    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center">
+          <p>{row.getValue("color_name")}</p>
+          <div
+            className="w-7 h-7 ml-2 rounded-md"
+            style={{ backgroundColor: row.getValue("color_name") }}
+          ></div>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "size_name",
