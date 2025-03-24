@@ -1,5 +1,5 @@
 import express from "express";
-import { cancelOrder, changeOrderStatusByAdmin, createOrder, getAllOrdersByAdmin, getOrderDetailByUser, getOrdersByUserIdAndStatus } from "../controllers/orderController.js";
+import { applyVoucher, cancelOrder, changeOrderStatusByAdmin, createOrder, getAllOrdersByAdmin, getOrderDetailByUser, getOrdersByUserIdAndStatus } from "../controllers/orderController.js";
 
 const router = express.Router();
 
@@ -9,5 +9,6 @@ router.post("/orders-by-user", getOrdersByUserIdAndStatus)
 router.get("/order-detail-by-user/:order_id", getOrderDetailByUser)
 router.put("/cancel", cancelOrder);
 router.put("/change-status-by-admin", changeOrderStatusByAdmin)
+router.put("/apply-voucher", applyVoucher)
 
 export default router;

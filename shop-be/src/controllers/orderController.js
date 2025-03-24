@@ -1,4 +1,4 @@
-import { DISCOUNT_TYPE, isOrderCancellable, isValidOrderStatus, isValidOrderStatusToChangeByAdmin, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
+import { DISCOUNT_TYPE, isValidOrderStatus, isValidOrderStatusToChangeByAdmin, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
 
 //#region Web api
@@ -128,7 +128,7 @@ export const createOrder = async (req, res) => {
             // Apply voucher
             if (existingVoucher.discount_type === DISCOUNT_TYPE.PERCENTAGE) {
                 const temp_discount_amount = (existingVoucher.discount_value * order.total_price) / 100;
-                order.discount_amount = temp_discount_amount > max_discount ? max_discount : temp_discount_amount;
+                order.discount_amount = temp_discount_amount > existingVoucher.max_discount ? existingVoucher.max_discount : temp_discount_amount;
             } else {
                 order.discount_amount = order.total_price <= existingVoucher.discount_value ? order.total_price : existingVoucher.discount_value;
             }
@@ -142,6 +142,18 @@ export const createOrder = async (req, res) => {
                 INSERT INTO \`order\` (user_id, total_price, discount_amount, final_price, voucher_id, payment_method, shipping_address) 
                 VALUES(?, ?, ?, ?, ?, ?, ?)`
                 , [order.user_id, order.total_price, order.discount_amount, order.final_price, order.voucher_id, order.payment_method, order.shipping_address]
+            );
+
+            // Reduce voucher quantity
+            await pool.query(
+                "UPDATE voucher SET quantity = quantity - 1 WHERE voucher_id = ? AND quantity > 0",
+                [order.voucher_id]
+            );
+
+            // Add voucher usage
+            await pool.query(
+                "INSERT INTO voucher_usage (voucher_id, user_id, order_id) VALUES (?, ?, ?)",
+                [order.voucher_id, order.user_id, orderResult.insertId]
             );
         } else {
             [orderResult] = await pool.query(`
@@ -257,7 +269,9 @@ export const getOrderDetailByUser = async (req, res) => {
                     oi.quantity,
                     oi.price,
                     s.size_name,
-                    c.color_name
+                    c.color_name,
+                    o.discount_amount,
+                    o.created_date
                 FROM \`order\` o
                 JOIN user u ON o.user_id = u.user_id
                 JOIN order_item oi ON o.order_id = oi.order_id
@@ -274,6 +288,8 @@ export const getOrderDetailByUser = async (req, res) => {
         const returnedOrderDetail = rows.length > 0 ? {
             order_id: order_id,
             payment_method: rows[0].payment_method,
+            discount_amount: rows[0].discount_amount,
+            created_date: rows[0].created_date,
             user: {
                 full_name: rows[0].full_name,
                 phone_number: rows[0].phone_number,
@@ -320,7 +336,7 @@ export const cancelOrder = async (req, res) => {
                 data: "",
             });
         }
-        if (!isOrderCancellable(existingOrder[0].status)) {
+        if (!isOrderCancellable(existingOrder[0])) {
             return res.status(409).json({
                 message: RES_MESSAGES.ORDER_NOT_CANCELLABE,
                 data: "",
@@ -332,10 +348,89 @@ export const cancelOrder = async (req, res) => {
 
         res.status(200).json({
             message: RES_MESSAGES.CANCEL_ORDER_SUCCESS,
-            data: "",
+            data: returnedOrder[0],
         });
     } catch (error) {
         console.log("orderController::cancelOrder => error: " + error);
+        res.status(500).json({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: "",
+        });
+    }
+};
+
+export const applyVoucher = async (req, res) => {
+    const order = req.body;
+    try {
+        // Check if voucher exists
+        const [[existingVoucher]] = await pool.query(
+            "SELECT * FROM `voucher` WHERE code = ?",
+            [order.voucher_code]
+        );
+        if (!existingVoucher) {
+            return res.status(404).json({
+                message: RES_MESSAGES.VOUCHER_NOT_EXIST,
+                data: "",
+            });
+        }
+        if (existingVoucher.quantity <= 0) {
+            return res.status(400).json({
+                message: RES_MESSAGES.VOUCHER_NOT_AVAILABLE,
+                data: "",
+            });
+        }
+
+        // Get current date
+        const now = new Date();
+        const startDate = new Date(existingVoucher.start_date);
+        const endDate = new Date(existingVoucher.end_date);
+
+        // Check if voucher is not within valid date range
+        if (now < startDate || now > endDate) {
+            return res.status(400).json({
+                message: RES_MESSAGES.VOUCHER_EXPIRED,
+                data: "",
+            });
+        }
+
+        // Check if user already used the voucher
+        const [[voucherUsageExists]] = await pool.query(
+            "SELECT COUNT(*) AS count FROM `voucher_usage` WHERE user_id = ? AND voucher_id = ?",
+            [order.user_id, existingVoucher.voucher_id]
+        );
+        if (voucherUsageExists.count) {
+            return res.status(409).json({
+                message: RES_MESSAGES.USER_USED_VOUCHER,
+                data: "",
+            });
+        }
+
+        // Check if the voucher can be used for this order
+        if (order.total_price < existingVoucher.min_order_value) {
+            return res.status(409).json({
+                message: RES_MESSAGES.ORDER_AMOUNT_LESS_THAN_VOUCHER,
+                data: "",
+            });
+        }
+
+        // Apply voucher
+        if (existingVoucher.discount_type === DISCOUNT_TYPE.PERCENTAGE) {
+            const temp_discount_amount = (existingVoucher.discount_value * order.total_price) / 100;
+            order.discount_amount = temp_discount_amount > existingVoucher.max_discount ? existingVoucher.max_discount : temp_discount_amount;
+        } else {
+            order.discount_amount = order.total_price <= existingVoucher.discount_value ? order.total_price : existingVoucher.discount_value;
+        }
+        order.final_price = order.total_price - order.discount_amount;
+
+        res.status(200).json({
+            message: RES_MESSAGES.APPLY_VOUCHER_SUCCESS,
+            data: {
+                voucher_id: existingVoucher.voucher_id,
+                final_price: order.final_price,
+            },
+        });
+    } catch (error) {
+        console.log("orderController::applyVoucher => error: " + error);
         res.status(500).json({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",

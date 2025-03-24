@@ -92,6 +92,9 @@ export const RES_MESSAGES = {
     CREATE_VOUCHER_SUCCESS: "Tạo voucher thành công.",
     DELETE_VOUCHER_SUCCESS: "Xóa voucher thành công.",
     UPDATE_VOUCHER_SUCCESS: "Cập nhật voucher thành công.",
+    APPLY_VOUCHER_SUCCESS: "Áp dụng voucher thành công",
+    VOUCHER_NOT_AVAILABLE: "Voucher này đã hết số lần sử dụng.",
+    VOUCHER_EXPIRED: "Voucher này đã hạn sử dụng.",
 
     // REVIEW
     REVIEW_NOT_EXIST: "Đánh giá không tồn tại.",
