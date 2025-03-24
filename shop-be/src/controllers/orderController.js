@@ -1,4 +1,4 @@
-import { DISCOUNT_TYPE, isValidOrderStatus, isValidOrderStatusToChangeByAdmin, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
+import { DISCOUNT_TYPE, isOrderCancellable, isValidOrderStatus, isValidOrderStatusToChangeByAdmin, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
 
 //#region Web api
@@ -320,7 +320,7 @@ export const cancelOrder = async (req, res) => {
                 data: "",
             });
         }
-        if (!isOrderCancellable(existingOrder[0])) {
+        if (!isOrderCancellable(existingOrder[0].status)) {
             return res.status(409).json({
                 message: RES_MESSAGES.ORDER_NOT_CANCELLABE,
                 data: "",
@@ -332,7 +332,7 @@ export const cancelOrder = async (req, res) => {
 
         res.status(200).json({
             message: RES_MESSAGES.CANCEL_ORDER_SUCCESS,
-            data: returnedOrder[0],
+            data: "",
         });
     } catch (error) {
         console.log("orderController::cancelOrder => error: " + error);

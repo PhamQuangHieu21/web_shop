@@ -4,8 +4,7 @@ import {
     register,
     updateUsers,
     updatedPassword,
-    getAllUsers,
-    resetPassword
+    resetPassword,
     getAllUsersByAdmin
 } from "../controllers/userController.js";
 

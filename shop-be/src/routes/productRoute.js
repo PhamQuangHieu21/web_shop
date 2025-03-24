@@ -1,5 +1,5 @@
 import express from "express";
-import { createProduct, deleteProduct, getAllProducts, addProductToFavourite, updateProduct, getProductDetail, getAllProductsFavourite } from "../controllers/productController.js";
+import { createProduct, deleteProduct, getAllProducts, addProductToFavourite, updateProduct, getAllProductsList, getProductDetail, getAllProductsFavourite, getAllProductsByCategoryId } from "../controllers/productController.js";
 import { productImageUploader } from "../middlewares/uploader.js";
 
 const router = express.Router();
@@ -20,5 +20,8 @@ router.put(
 );
 router.delete("/delete/:id", deleteProduct)
 router.get("/detail/:id", getProductDetail)
+router.get("/category_id/:id", getAllProductsByCategoryId)
+router.get("/all-list", getAllProductsList)
+
 
 export default router;

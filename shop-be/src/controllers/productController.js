@@ -372,3 +372,86 @@ export const getProductDetail = async (req, res) => {
         });
     }
 };
+
+
+export const getAllProductsByCategoryId = async (req, res) => {
+
+    const { id } = req.params
+
+    const [products] = await pool.query(
+        "SELECT * FROM `product` WHERE category_id = ?", [id]
+    );
+
+    for (let product of products) {
+        // Fetch category            
+        const [existingCategory] = await pool.query(
+            "SELECT * FROM `category` WHERE category_id = ?",
+            [product.category_id]
+        );
+        if (existingCategory.length > 0) {
+            product.category_id = existingCategory[0].category_id;
+            product.category = existingCategory[0].name;
+        }
+        // Fetch images
+        product.current_images = [];
+        const [images] = await pool.query(
+            "SELECT * FROM `product_image` WHERE product_id = ?",
+            [product.product_id]
+        );
+        if (images.length > 0) {
+            for (let image of images) {
+                product.current_images.push(image.image_url);
+            }
+        }
+    }
+
+    res.status(200).json({
+        message: "",
+        data: products,
+    });
+}
+
+export const getAllProductsList = async (req, res) => {
+    try {
+
+
+        const [products] = await pool.query(
+            "SELECT * FROM `product`",
+        );
+
+        for (let product of products) {
+            // Fetch category            
+            const [existingCategory] = await pool.query(
+                "SELECT * FROM `category` WHERE category_id = ?",
+                [product.category_id]
+            );
+            if (existingCategory.length > 0) {
+                product.category_id = existingCategory[0].category_id;
+                product.category = existingCategory[0].name;
+            }
+
+            // Fetch images
+            product.current_images = [];
+            const [images] = await pool.query(
+                "SELECT * FROM `product_image` WHERE product_id = ?",
+                [product.product_id]
+            );
+            if (images.length > 0) {
+                for (let image of images) {
+                    product.current_images.push(image.image_url);
+                }
+            }
+        }
+
+        res.status(200).json({
+            message: "",
+            data: products,
+        });
+    } catch (error) {
+        console.log("productController::getAllProducts => error: " + error);
+        res.status(500).send({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: "",
+        });
+    }
+};

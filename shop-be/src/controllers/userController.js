@@ -9,7 +9,6 @@ import {
 } from "firebase/auth";
 import { log } from "console";
 import { json } from "stream/consumers";
-import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 
 //#region Admin apis
 export const getAllUsersByAdmin = async (req, res) => {
@@ -204,6 +203,38 @@ export const updatedPassword = async (req, res) => {
             message: "Password updated SUCCESS",
             data: "",
         });
+    } catch (error) {
+        console.error("Error updating password:", error);
+        // Handle Firebase authentication errors
+        if (error.code) {
+            return firebaseAuthErrorHandler(error.code, res);
+        }
+        // Send a general error response
+        res.status(500).send({
+            message: "An error occurred while updating the password",
+            data: "",
+        });
+    }
+}
+export const resetPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        // Log input parameters for debugging
+        console.log("email = " + email);
+        sendPasswordResetEmail(auth, email).then(() => {
+            // Send a success response
+            res.status(200).send({
+                message: RES_MESSAGES.RESET_PASSWORD,
+                data: "",
+            });
+        }).catch((e) => {
+            if (e.code) {
+                return firebaseAuthErrorHandler(error.code, res);
+            }
+        })
+
+
     } catch (error) {
         console.error("Error updating password:", error);
         // Handle Firebase authentication errors
