@@ -1,4 +1,4 @@
-import { DISCOUNT_TYPE, isValidOrderStatus, RES_MESSAGES } from "../utils/constants.js";
+import { DISCOUNT_TYPE, isValidOrderStatus, isValidOrderStatusToChangeByAdmin, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
 
 //#region Web api
@@ -36,21 +36,27 @@ export const changeOrderStatusByAdmin = async (req, res) => {
             });
         }
 
-        if (!isValidOrderStatus(data.new_status)) {
+        if (!isValidOrderStatusToChangeByAdmin(data.new_status)) {
             return res.status(400).json({
                 message: RES_MESSAGES.INVALID_ORDER_STATUS,
                 data: "",
             });
         }
 
-        // Change order status
+        // Change order status to 'cancelled'
+        await pool.query("UPATE `order` SET status = ? WHERE order_id = ?, modified_date = NOW()", [data.new_status, data.order_id]);
+
+        // Re-fetch order to return
+        const [returnedOrder] = await pool.query("SELECT modified_date FROM `order` WHERE order_id = ?", [data.order_id]);
 
         res.status(200).json({
-            message: "",
-            data: orders,
+            message: RES_MESSAGES.CHANGE_ORDER_STATUS_SUCCESS,
+            data: {
+                modified_date: returnedOrder[0].modified_date
+            },
         });
     } catch (error) {
-        console.log("orderController::getAllOrdersByAdmin => error: " + error);
+        console.log("orderController::changeOrderStatusByAdmin => error: " + error);
         res.status(500).json({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",
@@ -143,6 +149,12 @@ export const createOrder = async (req, res) => {
                 VALUES(?, ?, ?, ?, ?, ?, ?)`
                 , [order.user_id, order.total_price, order.discount_amount, order.final_price, order.payment_method, order.shipping_address, order.shipping_fee]
             );
+        }
+
+        // Delete cart items
+        if (order.cart_items.length) {
+            const query = `DELETE FROM cart WHERE cart_id IN (${order.cart_items.map(() => '?').join(',')})`;
+            await pool.query(query, order.cart_items);
         }
 
         // Re-fetch order to return
@@ -276,6 +288,54 @@ export const getOrderDetailByUser = async (req, res) => {
         });
     } catch (error) {
         console.log("orderController::getOrderDetailByUser => error: " + error);
+        res.status(500).json({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: "",
+        });
+    }
+};
+
+export const cancelOrder = async (req, res) => {
+    const data = req.body;
+    try {
+        // Validate
+        const [[userExists]] = await pool.query(
+            "SELECT COUNT(*) AS count FROM `user` WHERE user_id = ?",
+            [data.user_id]
+        );
+        if (!userExists.count) {
+            return res.status(404).json({
+                message: RES_MESSAGES.USER_NOT_EXIST,
+                data: "",
+            });
+        }
+
+        const [existingOrder] = await pool.query(
+            "SELECT status FROM `order` WHERE order_id = ?",
+            [data.order_id]
+        );
+        if (!existingOrder.length) {
+            return res.status(404).json({
+                message: RES_MESSAGES.ORDER_NOT_EXIST,
+                data: "",
+            });
+        }
+        if (!isOrderCancellable(existingOrder[0])) {
+            return res.status(409).json({
+                message: RES_MESSAGES.ORDER_NOT_CANCELLABE,
+                data: "",
+            });
+        }
+
+        // change order status to 'cancelled'
+        await pool.query("UPDATE `order` SET status = ?, modified_date = NOW() WHERE order_id = ?", [ORDER_STATUS.CANCELLED, data.order_id]);
+
+        res.status(200).json({
+            message: RES_MESSAGES.CANCEL_ORDER_SUCCESS,
+            data: returnedOrder[0],
+        });
+    } catch (error) {
+        console.log("orderController::cancelOrder => error: " + error);
         res.status(500).json({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",

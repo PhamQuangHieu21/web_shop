@@ -6,8 +6,23 @@ export const DISCOUNT_TYPE = {
     FIXED: "fixed",
 }
 
+export const ORDER_STATUS = {
+    PENDING: 'pending',
+    PAID: 'paid',
+    COMPLETED: 'completed',
+    CANCELLED: 'cancelled'
+}
+
 export function isValidOrderStatus(status) {
-    return ['pending', 'paid', 'completed', 'cancelled'].includes(status);
+    return Object.values(ORDER_STATUS).includes(status);
+}
+
+export function isOrderCancellable(status) {
+    return status === ORDER_STATUS.PENDING;
+}
+
+export function isValidOrderStatusToChangeByAdmin(status) {
+    return status === ORDER_STATUS.PAID || status === ORDER_STATUS.COMPLETED;
 }
 
 export const RES_MESSAGES = {
@@ -97,6 +112,9 @@ export const RES_MESSAGES = {
     CREATE_ORDER_SUCCESS: "Tạo đơn hàng thành công",
     INVALID_ORDER_STATUS: "Trạng thái đơn hàng gửi lên không hợp lệ.",
     ORDER_NOT_EXIST: "Đơn hàng không tồn tại",
+    ORDER_NOT_CANCELLABE: "Đơn hàng không thể hủy bỏ.",
+    CANCEL_ORDER_SUCCESS: "Hủy đơn hàng thành công.",
+    CHANGE_ORDER_STATUS_SUCCESS: "Sửa trạng thái đơn hàng thành công.",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {
