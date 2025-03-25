@@ -27,6 +27,7 @@ export function isValidOrderStatusToChangeByAdmin(status) {
 
 export const RES_MESSAGES = {
     SERVER_ERROR: "Đã xảy ra lỗi từ phía server. Quý khách vui lòng thử lại sau.",
+    PAYMENT_ERROR: "Khởi tạo thanh toán Paypal thất bại",
 
     // USER
     USER_LOGIN_SUCCESS: "Đăng nhập thành công",

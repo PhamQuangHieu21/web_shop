@@ -3,8 +3,10 @@ import { existsSync, mkdirSync } from "fs";
 import { PORT, SERVER_URL } from "./src/utils/constants.js";
 import routes from "./src/routes/index.js"
 import cors from "cors";
+import dotenv from "dotenv";
 
 // express
+dotenv.config();
 const app = express();
 
 // middlewares
@@ -14,6 +16,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: "100mb" }));
 app.use(express.static("STATIC"));
+
 // routes
 app.use("/", routes);
 
