@@ -2,11 +2,8 @@ import pool from "../config/database.js";
 import { RES_MESSAGES } from "../utils/constants.js";
 import { deleteImages } from "../utils/operator.js";
 
-export const getAllProducts = async (req, res) => {
+export const getAllProductsByAdmin = async (req, res) => {
     try {
-
-        const { id } = req.params
-
         const [products] = await pool.query(
             "SELECT * FROM `product`",
         );
@@ -33,12 +30,6 @@ export const getAllProducts = async (req, res) => {
                     product.current_images.push(image.image_url);
                 }
             }
-            const [product_favorites] = await pool.query(
-                "SELECT * FROM `product_favourite` WHERE product_id = ? and user_id = ?",
-                [product.product_id, id]
-            );
-            if (product_favorites.length > 0) product.isFavourite = true;
-            else product.isFavourite = false;
         }
 
         res.status(200).json({
@@ -441,6 +432,59 @@ export const getAllProductsList = async (req, res) => {
                     product.current_images.push(image.image_url);
                 }
             }
+        }
+
+        res.status(200).json({
+            message: "",
+            data: products,
+        });
+    } catch (error) {
+        console.log("productController::getAllProducts => error: " + error);
+        res.status(500).send({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: "",
+        });
+    }
+};
+
+// App api
+export const getAllProducts = async (req, res) => {
+    try {
+
+        const { id } = req.params
+
+        const [products] = await pool.query(
+            "SELECT * FROM `product`",
+        );
+
+        for (let product of products) {
+            // Fetch category            
+            const [existingCategory] = await pool.query(
+                "SELECT * FROM `category` WHERE category_id = ?",
+                [product.category_id]
+            );
+            if (existingCategory.length > 0) {
+                product.category_id = existingCategory[0].category_id;
+                product.category = existingCategory[0].name;
+            }
+
+            // Fetch images
+            product.current_images = [];
+            const [images] = await pool.query(
+                "SELECT * FROM `product_image` WHERE product_id = ?",
+                [product.product_id]
+            );
+            if (images.length > 0) {
+                for (let image of images) {
+                    product.current_images.push(image.image_url);
+                }
+            }
+            const [product_favorites] = await pool.query(
+                "SELECT * FROM `product_favourite` WHERE product_id = ? and user_id = ?",
+                [product.product_id, id]
+            );
+            if (product_favorites.length > 0) product.isFavourite = true;
+            else product.isFavourite = false;
         }
 
         res.status(200).json({

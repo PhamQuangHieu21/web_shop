@@ -21,7 +21,7 @@ export const getCartByUser = async (req, res) => {
             JOIN product p ON v.product_id = p.product_id
             LEFT JOIN color col ON v.color_id = col.color_id
             LEFT JOIN size s ON v.size_id = s.size_id
-            WHERE c.user_id = 1`,
+            WHERE c.user_id = ?`,
             [user_id]
         );
 

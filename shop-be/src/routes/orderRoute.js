@@ -1,8 +1,9 @@
 import express from "express";
-import { applyVoucher, cancelOrder, changeOrderStatusByAdmin, createOrder, getAllOrdersByAdmin, getOrderDetailByUser, getOrdersByUserIdAndStatus } from "../controllers/orderController.js";
+import { applyVoucher, cancelOrder, changeOrderStatusByAdmin, createOrder, createOrderWithPaypal, getAllOrdersByAdmin, getOrderDetailByUser, getOrdersByUserIdAndStatus } from "../controllers/orderController.js";
 
 const router = express.Router();
 
+router.post("/new-paypal-order", createOrderWithPaypal);
 router.post("/new", createOrder)
 router.get("/list-by-admin", getAllOrdersByAdmin)
 router.post("/orders-by-user", getOrdersByUserIdAndStatus)

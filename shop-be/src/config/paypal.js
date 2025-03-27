@@ -1,9 +1,9 @@
 import fetch from 'node-fetch';
-import { RES_MESSAGES, SERVER_URL } from '../utils/constants';
+import { RES_MESSAGES, SERVER_URL } from '../utils/constants.js';
+import { convertVndToUsd } from '../utils/operator.js';
 
 const PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com";
 
-// Get PayPal Access Token
 const getPaypalAccessToken = async () => {
     const credentials = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET_KEY}`).toString("base64");
 
@@ -25,21 +25,21 @@ const getPaypalAccessToken = async () => {
     }
 };
 
-const createOrder = async () => {
+const createPaypalOrder = async (amount, orderId) => {
     try {
         // Fetch access token
         const accessToken = await getPaypalAccessToken();
         if (!accessToken) {
-            console.error("getPaypalAccessToken() failed: ", error);
+            console.log("getPaypalAccessToken() failed: ", error);
             return {
                 status: 500,
-                message: RES_MESSAGES.PAYMENT_ERROR,
+                message: RES_MESSAGES.INITIALIZE_PAYPAL_FAIL,
                 data: "",
             }
         }
 
         // Create order
-        const order = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders`, {
+        const response = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -47,21 +47,22 @@ const createOrder = async () => {
             },
             body: JSON.stringify({
                 intent: "CAPTURE",
-                purchase_units: [{ amount: { currency_code: "USD", value: amount } }],
+                purchase_units: [{ amount: { currency_code: "USD", value: convertVndToUsd(amount) } }],
                 application_context: {
-                    return_url: `${SERVER_URL}/success`,
-                    cancel_url: `${SERVER_URL}/cancel`,
+                    return_url: `${SERVER_URL}/payment/paypal-success?orderId=${orderId}`,
+                    cancel_url: `${SERVER_URL}/payment/paypal-cancel?orderId=${orderId}`,
                 },
             })
         });
 
         // Fetch approval url to re-direct end-user
-        const approvalUrl = order.data.links.find(link => link.rel === "approve").href;
+        const data = await response.json()
+        const approvalUrl = data.links.find(link => link.rel === "approve").href;
         if (!approvalUrl) {
-            console.error("get approval link failed: ");
+            console.log("get approval link failed");
             return {
                 status: 500,
-                message: RES_MESSAGES.PAYMENT_ERROR,
+                message: RES_MESSAGES.INITIALIZE_PAYPAL_FAIL,
                 data: "",
             }
         }
@@ -73,15 +74,52 @@ const createOrder = async () => {
             data: approvalUrl,
         }
     } catch (error) {
-        console.error("createOrder() failed: ", error);
+        console.log("createOrder() failed: ", error);
         return {
             status: 500,
-            message: RES_MESSAGES.PAYMENT_ERROR,
+            message: RES_MESSAGES.INITIALIZE_PAYPAL_FAIL,
             data: "",
         }
     }
 }
 
+const capturePaypalOrder = async (paypalOrderId) => {
+    try {
+        if (!paypalOrderId) {
+            console.log("capturePaypalOrder() failed: invalid paypalOrderId");
+            return { status: 500, message: RES_MESSAGES.INITIALIZE_PAYPAL_FAIL, data: "" };
+        }
+        // Fetch access token
+        const accessToken = await getPaypalAccessToken();
+        if (!accessToken) {
+            console.log("getPaypalAccessToken() failed");
+            return { status: 500, message: RES_MESSAGES.INITIALIZE_PAYPAL_FAIL, data: "" };
+        }
+
+        // Capture order
+        const response = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders/${paypalOrderId}/capture`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`,
+            },
+        });
+
+        const result = await response.json();
+        if (result.status === "COMPLETED") {
+            console.log(RES_MESSAGES.PAYPAL_PAYMENT_SUCCESS)
+            return { status: 200, message: RES_MESSAGES.PAYPAL_PAYMENT_SUCCESS, data: result };
+        } else {
+            console.log(RES_MESSAGES.PAYPAL_PAYMENT_FAIL)
+            return { status: 500, message: RES_MESSAGES.PAYPAL_PAYMENT_FAIL, data: result };
+        }
+    } catch (error) {
+        console.log("capturePaypalOrder() failed:", error);
+        return { status: 500, message: RES_MESSAGES.PAYPAL_PAYMENT_FAIL, data: "" };
+    }
+};
+
 export {
-    createOrder
+    createPaypalOrder,
+    capturePaypalOrder
 }

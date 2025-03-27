@@ -1,5 +1,6 @@
 import { DISCOUNT_TYPE, isValidOrderStatus, isValidOrderStatusToChangeByAdmin, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
+import { createPaypalOrder } from "../config/paypal.js";
 
 //#region Web api
 export const getAllOrdersByAdmin = async (req, res) => {
@@ -44,7 +45,7 @@ export const changeOrderStatusByAdmin = async (req, res) => {
         }
 
         // Change order status to 'cancelled'
-        await pool.query("UPATE `order` SET status = ? WHERE order_id = ?, modified_date = NOW()", [data.new_status, data.order_id]);
+        await pool.query("UPDATE `order` SET status = ?, modified_date = NOW() WHERE order_id = ?", [data.new_status, data.order_id]);
 
         // Re-fetch order to return
         const [returnedOrder] = await pool.query("SELECT modified_date FROM `order` WHERE order_id = ?", [data.order_id]);
@@ -187,6 +188,146 @@ export const createOrder = async (req, res) => {
             message: RES_MESSAGES.CREATE_ORDER_SUCCESS,
             data: returnedOrder[0],
         });
+    } catch (error) {
+        console.log("orderController::createOrder => error: " + error);
+        res.status(500).json({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: "",
+        });
+    }
+};
+
+export const createOrderWithPaypal = async (req, res) => {
+    const order = req.body;
+    console.log(order)
+    try {
+        // Validate
+        const [[userExists]] = await pool.query(
+            "SELECT COUNT(*) AS count FROM `user` WHERE user_id = ?",
+            [order.user_id]
+        );
+        if (!userExists.count) {
+            return res.status(400).json({
+                message: RES_MESSAGES.USER_NOT_EXIST,
+                data: "",
+            });
+        }
+
+        // Calculate order amount
+        order.total_price = 0;
+        order.discount_amount = 0;
+        for (let variant of order.variants) {
+            variant.subtotal = variant.price * variant.quantity;
+            order.total_price += variant.price * variant.quantity;
+        }
+        order.final_price = order.total_price;
+
+        // Process voucher 
+        if (order.voucher_id) {
+            // Check if voucher exists
+            const [[existingVoucher]] = await pool.query(
+                "SELECT * FROM `voucher` WHERE voucher_id = ?",
+                [order.voucher_id]
+            );
+            if (!existingVoucher) {
+                return res.status(404).json({
+                    message: RES_MESSAGES.VOUCHER_NOT_EXIST,
+                    data: "",
+                });
+            }
+
+            // Check if user already used the voucher
+            const [[voucherUsageExists]] = await pool.query(
+                "SELECT COUNT(*) AS count FROM `voucher_usage` WHERE user_id = ? AND voucher_id = ?",
+                [order.user_id, order.voucher_id]
+            );
+            if (voucherUsageExists.count) {
+                return res.status(409).json({
+                    message: RES_MESSAGES.USER_USED_VOUCHER,
+                    data: "",
+                });
+            }
+
+            // Check if the voucher can be used for this order
+            if (order.total_price < existingVoucher.min_order_value) {
+                return res.status(409).json({
+                    message: RES_MESSAGES.ORDER_AMOUNT_LESS_THAN_VOUCHER,
+                    data: "",
+                });
+            }
+
+            // Apply voucher
+            if (existingVoucher.discount_type === DISCOUNT_TYPE.PERCENTAGE) {
+                const temp_discount_amount = (existingVoucher.discount_value * order.total_price) / 100;
+                order.discount_amount = temp_discount_amount > existingVoucher.max_discount ? existingVoucher.max_discount : temp_discount_amount;
+            } else {
+                order.discount_amount = order.total_price <= existingVoucher.discount_value ? order.total_price : existingVoucher.discount_value;
+            }
+            order.final_price = order.total_price - order.discount_amount;
+        }
+
+        // Create order
+        let orderResult;
+        if (order.voucher_id) {
+            [orderResult] = await pool.query(`
+                INSERT INTO \`order\` (user_id, total_price, discount_amount, final_price, voucher_id, payment_method, shipping_address) 
+                VALUES(?, ?, ?, ?, ?, ?, ?)`
+                , [order.user_id, order.total_price, order.discount_amount, order.final_price, order.voucher_id, order.payment_method, order.shipping_address]
+            );
+
+            // Reduce voucher quantity
+            await pool.query(
+                "UPDATE voucher SET quantity = quantity - 1 WHERE voucher_id = ? AND quantity > 0",
+                [order.voucher_id]
+            );
+
+            // Add voucher usage
+            await pool.query(
+                "INSERT INTO voucher_usage (voucher_id, user_id, order_id) VALUES (?, ?, ?)",
+                [order.voucher_id, order.user_id, orderResult.insertId]
+            );
+        } else {
+            [orderResult] = await pool.query(`
+                INSERT INTO \`order\` (user_id, total_price, discount_amount, final_price, payment_method, shipping_address, shipping_fee) 
+                VALUES(?, ?, ?, ?, ?, ?, ?)`
+                , [order.user_id, order.total_price, order.discount_amount, order.final_price, order.payment_method, order.shipping_address, order.shipping_fee]
+            );
+        }
+
+        // Delete cart items
+        if (order.cart_items.length) {
+            const query = `DELETE FROM cart WHERE cart_id IN (${order.cart_items.map(() => '?').join(',')})`;
+            await pool.query(query, order.cart_items);
+        }
+
+        // Re-fetch order to return
+        const insertedOrderId = orderResult.insertId;
+        const [returnedOrder] = await pool.query("SELECT * FROM `order` WHERE order_id = ?", [insertedOrderId]);
+
+        // Create order items
+        for (let variant of order.variants) {
+            await pool.query(`
+                INSERT INTO \`order_item\` 
+                (order_id, variant_id, price, quantity, subtotal) 
+                VALUES(?, ?, ?, ?, ?)`
+                , [returnedOrder[0].order_id, variant.variant_id, variant.price, variant.quantity, variant.subtotal]
+            );
+        }
+
+        // Initialize paypal checkout
+        const creationResult = await createPaypalOrder(order.final_price, insertedOrderId)
+
+        if (creationResult.status === 200) {
+            res.status(200).json({
+                message: RES_MESSAGES.CREATE_ORDER_SUCCESS,
+                data: creationResult.data,
+            });
+        } else {
+            res.status(500).json({
+                message: creationResult.message,
+                data: "",
+            });
+        }
     } catch (error) {
         console.log("orderController::createOrder => error: " + error);
         res.status(500).json({

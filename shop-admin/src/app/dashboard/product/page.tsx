@@ -21,7 +21,7 @@ export default function ProductPage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await apiRequest<Product>("/product/list", "GET");
+        const res = await apiRequest<Product>("/product/list-by-admin", "GET");
         if (res.status === 200) setData(res.data as Product[]);
         else toast.error(res.message);
       } catch (error) {

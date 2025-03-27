@@ -1,9 +1,10 @@
 import express from "express";
-import { createProduct, deleteProduct, getAllProducts, addProductToFavourite, updateProduct, getAllProductsList, getProductDetail, getAllProductsFavourite, getAllProductsByCategoryId } from "../controllers/productController.js";
+import { createProduct, deleteProduct, getAllProducts, addProductToFavourite, updateProduct, getAllProductsList, getProductDetail, getAllProductsFavourite, getAllProductsByCategoryId, getAllProductsByAdmin } from "../controllers/productController.js";
 import { productImageUploader } from "../middlewares/uploader.js";
 
 const router = express.Router();
 
+router.get("/list-by-admin", getAllProductsByAdmin)
 router.get("/list/:id", getAllProducts);
 router.get("/list_like/:id", getAllProductsFavourite);
 
