@@ -49,8 +49,8 @@ const createPaypalOrder = async (amount, orderId) => {
                 intent: "CAPTURE",
                 purchase_units: [{ amount: { currency_code: "USD", value: convertVndToUsd(amount) } }],
                 application_context: {
-                    return_url: `${SERVER_URL}/payment/paypal-success?orderId=${orderId}`,
-                    cancel_url: `${SERVER_URL}/payment/paypal-cancel?orderId=${orderId}`,
+                    return_url: `${process.env.PAYMENT_RETURN_URL}/payment/paypal-success?orderId=${orderId}`,
+                    cancel_url: `${process.env.PAYMENT_RETURN_URL}/payment/paypal-cancel?orderId=${orderId}`,
                 },
             })
         });

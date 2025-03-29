@@ -122,6 +122,11 @@ export const RES_MESSAGES = {
     ORDER_NOT_CANCELLABE: "Đơn hàng không thể hủy bỏ.",
     CANCEL_ORDER_SUCCESS: "Hủy đơn hàng thành công.",
     CHANGE_ORDER_STATUS_SUCCESS: "Sửa trạng thái đơn hàng thành công.",
+
+    // NOTIFICATION
+    ADD_NOTIFICATION: "Thêm thông báo thành công.",
+    UPDATE_NOTIFICATION: "Cập nhật trạng thái thành công.",
+    DELETE_NOTIFICATION: "Xóa thông báo thành công.",
 }
 
 export const FIREBASE_AUTH_ERROR_CODES = {

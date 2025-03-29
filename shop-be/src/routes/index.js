@@ -11,6 +11,7 @@ import reviewRoutes from "./reviewRoute.js"
 import cartRoutes from "./cartRoute.js"
 import orderRoutes from "./orderRoute.js"
 import paymentRoutes from "./paymentRoute.js"
+import notificationRoutes from "./notificationRoute.js"
 
 const router = express.Router();
 
@@ -25,5 +26,6 @@ router.use("/review", reviewRoutes);
 router.use("/cart", cartRoutes);
 router.use("/order", orderRoutes);
 router.use("/payment", paymentRoutes)
+router.use("/notification", notificationRoutes)
 
 export default router;

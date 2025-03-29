@@ -485,6 +485,16 @@ export const getAllProducts = async (req, res) => {
             );
             if (product_favorites.length > 0) product.isFavourite = true;
             else product.isFavourite = false;
+
+            const [product_reviews] = await pool.query("SELECT * FROM `review` WHERE product_id = ?",
+                [product.product_id]);
+
+            if (product_reviews.length > 0) {
+                const result = product_reviews.reduce((acculate, value) => acculate + value.number_of_stars, 0)
+                product.rating = Math.ceil(1.0 * result / product_reviews.length)
+            } else {
+                product.rating = 5.0
+            }
         }
 
         res.status(200).json({
