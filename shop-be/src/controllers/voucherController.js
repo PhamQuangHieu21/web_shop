@@ -25,7 +25,6 @@ export const createVoucher = async (req, res) => {
     try {
         voucher.start_date = formatDateForMySQL(voucher.valid_date.from);
         voucher.end_date = formatDateForMySQL(voucher.valid_date.to);
-        console.log(voucher)
         // Validate if code already exists
         const [[codeExists]] = await pool.query(
             "SELECT COUNT(*) AS count FROM `voucher` WHERE code = ?",
@@ -65,6 +64,28 @@ export const createVoucher = async (req, res) => {
              WHERE voucher_id = ?`,
             [insertedId]
         );
+
+        // Randomly send notification to users
+        const [userList] = await pool.query(`
+            SELECT user_id FROM user
+            ORDER BY RAND()
+            LIMIT 10`
+        );
+
+        for (const user of userList) {
+            await pool.query(
+                `INSERT INTO user_notification 
+                (user_id, title, message) 
+                VALUES (?, ?, ?)`,
+                [
+                    user.user_id,
+                    "Quà của tôi",
+                    `Bạn có thẻ mã khuyến mãi chưa sử dụng. 
+                    Nhập ${voucher.code} để nhận ngay khuyến mãi hấp dẫn khi mua hàng. 
+                    Tận dụng ngay trước khi hết hạn nào!`,
+                ]
+            );
+        }
 
         res.status(200).json({
             message: RES_MESSAGES.CREATE_VOUCHER_SUCCESS,
