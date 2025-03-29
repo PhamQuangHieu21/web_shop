@@ -106,6 +106,14 @@ export const createOrder = async (req, res) => {
                 });
             }
 
+            // Check if voucher quantity is > 0
+            if (existingVoucher.quantity <= 0) {
+                return res.status(400).json({
+                    message: RES_MESSAGES.VOUCHER_NOT_AVAILABLE,
+                    data: "",
+                });
+            }
+
             // Check if user already used the voucher
             const [[voucherUsageExists]] = await pool.query(
                 "SELECT COUNT(*) AS count FROM `voucher_usage` WHERE user_id = ? AND voucher_id = ?",
@@ -181,6 +189,12 @@ export const createOrder = async (req, res) => {
                 (order_id, variant_id, price, quantity, subtotal) 
                 VALUES(?, ?, ?, ?, ?)`
                 , [returnedOrder[0].order_id, variant.variant_id, variant.price, variant.quantity, variant.subtotal]
+            );
+
+            // Reduce variant quantity
+            await pool.query(
+                "UPDATE variant SET quantity = CASE WHEN quantity >= ? THEN quantity - ? ELSE 0 END WHERE variant_id = ?",
+                [variant.quantity, variant.quantity, variant.variant_id]
             );
         }
 
@@ -236,6 +250,14 @@ export const createOrderWithPaypal = async (req, res) => {
                 });
             }
 
+            // Check if voucher quantity is > 0
+            if (existingVoucher.quantity <= 0) {
+                return res.status(400).json({
+                    message: RES_MESSAGES.VOUCHER_NOT_AVAILABLE,
+                    data: "",
+                });
+            }
+
             // Check if user already used the voucher
             const [[voucherUsageExists]] = await pool.query(
                 "SELECT COUNT(*) AS count FROM `voucher_usage` WHERE user_id = ? AND voucher_id = ?",
@@ -311,6 +333,12 @@ export const createOrderWithPaypal = async (req, res) => {
                 (order_id, variant_id, price, quantity, subtotal) 
                 VALUES(?, ?, ?, ?, ?)`
                 , [returnedOrder[0].order_id, variant.variant_id, variant.price, variant.quantity, variant.subtotal]
+            );
+
+            // Reduce variant quantity
+            await pool.query(
+                "UPDATE variant SET quantity = CASE WHEN quantity >= ? THEN quantity - ? ELSE 0 END WHERE variant_id = ?",
+                [variant.quantity, variant.quantity, variant.variant_id]
             );
         }
 
@@ -468,7 +496,7 @@ export const cancelOrder = async (req, res) => {
         }
 
         const [existingOrder] = await pool.query(
-            "SELECT status FROM `order` WHERE order_id = ?",
+            "SELECT status, voucher_id FROM `order` WHERE order_id = ?",
             [data.order_id]
         );
         if (!existingOrder.length) {
@@ -486,6 +514,28 @@ export const cancelOrder = async (req, res) => {
 
         // change order status to 'cancelled'
         await pool.query("UPDATE `order` SET status = ?, modified_date = NOW() WHERE order_id = ?", [ORDER_STATUS.CANCELLED, data.order_id]);
+
+        // Recover variant quantity after cancelling the order
+        const [orderItems] = await pool.query("SELECT variant_id, quantity FROM order_item WHERE order_id = ?", [data.order_id]);
+        for (let orderItem of orderItems) {
+            await pool.query(
+                "UPDATE variant SET quantity = quantity + ? WHERE variant_id = ?",
+                [orderItem.quantity, orderItem.variant_id]
+            );
+        }
+
+        // Recover the voucher if applied
+        if (existingOrder[0].voucher_id) {
+            await pool.query(
+                "DELETE FROM voucher_usage WHERE user_id = ? AND voucher_id = ?",
+                [data.user_id, existingOrder[0].voucher_id]
+            );
+
+            await pool.query(
+                "UPDATE voucher SET quantity = quantity + 1 WHERE voucher_id = ?",
+                [existingOrder[0].voucher_id]
+            );
+        }
 
         res.status(200).json({
             message: RES_MESSAGES.CANCEL_ORDER_SUCCESS,
