@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { RES_MESSAGES, SERVER_URL } from '../utils/constants.js';
+import { RES_MESSAGES } from '../utils/constants.js';
 import { convertVndToUsd } from '../utils/operator.js';
 
 const PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com";
@@ -21,6 +21,7 @@ const getPaypalAccessToken = async () => {
         console.log("Access Token:", data.access_token);
         return data.access_token;
     } catch (error) {
+        console.log("getPaypalAccessToken() failed: " + error);
         return null;
     }
 };
@@ -30,7 +31,6 @@ const createPaypalOrder = async (amount, orderId) => {
         // Fetch access token
         const accessToken = await getPaypalAccessToken();
         if (!accessToken) {
-            console.log("getPaypalAccessToken() failed: ", error);
             return {
                 status: 500,
                 message: RES_MESSAGES.INITIALIZE_PAYPAL_FAIL,

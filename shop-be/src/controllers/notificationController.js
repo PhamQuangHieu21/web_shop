@@ -3,14 +3,14 @@ import pool from "../config/database.js";
 
 // App api
 export const getAllNotificationByUser = async (req, res) => {
-    const { user_id } = req.params;
+    const { id } = req.params;
     try {
         const [notificationsList] = await pool.query(
             `SELECT 
-                n.notification_id, n.title,  n.message, n.is_read, n.created_date
-            FROM notification n
-            WHERE n.user_id = ?`,
-            [user_id]
+                notification_id, title,  message, is_read, created_date
+            FROM user_notification
+            WHERE user_id = ?`,
+            [id]
         );
 
         res.status(200).json({
@@ -18,7 +18,7 @@ export const getAllNotificationByUser = async (req, res) => {
             data: notificationsList,
         });
     } catch (error) {
-        console.log("cartController::getCartByUser => error: " + error);
+        console.log("notificationController::getAllNotificationByUser => error: " + error);
         res.status(500).json({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",
@@ -43,7 +43,7 @@ export const createNotificationByAdmin = async (req, res) => {
             data: "",
         });
     } catch (error) {
-        console.log("cartController::getCartByUser => error: " + error);
+        console.log("notificationController::createNotificationByAdmin => error: " + error);
         res.status(500).json({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",
@@ -69,7 +69,7 @@ export const updateStatusNotificationByUser = async (req, res) => {
             data: "",
         });
     } catch (error) {
-        console.log("cartController::getCartByUser => error: " + error);
+        console.log("notificationController::updateStatusNotificationByUser => error: " + error);
         res.status(500).json({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",
@@ -94,7 +94,7 @@ export const deleteNotificationByAdmin = async (req, res) => {
             data: "",
         });
     } catch (error) {
-        console.log("cartController::getCartByUser => error: " + error);
+        console.log("notificationController::deleteNotificationByAdmin => error: " + error);
         res.status(500).json({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",
