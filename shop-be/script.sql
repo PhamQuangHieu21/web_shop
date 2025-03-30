@@ -29,13 +29,29 @@ CREATE TABLE user_notification (
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
--- Chat
-CREATE TABLE chat (
-    chat_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    content TEXT NOT NULL,
-    send_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+-- Conservation
+CREATE TABLE conversation (
+    conversation_id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT NOT NULL,  -- Admin in chat
+    customer_id INT NOT NULL, -- Customer in chat
+    last_message TEXT,  -- Stores last message sent
+    last_message_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- For sorting by latest chat
+    FOREIGN KEY (admin_id) REFERENCES user(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
+
+-- Message 
+CREATE TABLE message (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    conversation_id INT NOT NULL, -- Links to the chat
+    sender_id INT NOT NULL,  -- User sending the message
+    receiver_id INT NOT NULL, -- User receiving the message
+    message TEXT NOT NULL,
+    status ENUM('sent', 'delivered', 'read') DEFAULT 'sent', -- Message status
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (conversation_id) REFERENCES conversation(conversation_id) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES user(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
 -- Order

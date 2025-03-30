@@ -39,23 +39,6 @@ export function OrderTableRowActions({
 }: DataTableRowActionsProps<Order>) {
   const order = row.original;
 
-  async function deleteOrder() {
-    try {
-      const res = await apiRequest<Order>(
-        `/order/delete/${order.order_id}`,
-        "DELETE"
-      );
-      if (res.status === 200) {
-        setData((prev) =>
-          prev.filter((item) => item.order_id !== order.order_id)
-        );
-        toast.success(res.message);
-      } else toast.error(res.message);
-    } catch (error) {
-      toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
-    }
-  }
-
   return (
     <Dialog>
       <DropdownMenu>
@@ -84,9 +67,11 @@ export function OrderTableRowActions({
       </DropdownMenu>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Bạn chắc chắn muốn xóa đơn hàng?</DialogTitle>
+          <DialogTitle>
+            Bạn chắc chắn muốn chuyển trạng thái đơn hàng?
+          </DialogTitle>
           <DialogDescription>
-            Hành động này sẽ xóa vĩnh viễn bản ghi và không thể thu hồi.
+            Hành động này sẽ không thể thu hồi.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-end">
@@ -95,7 +80,7 @@ export function OrderTableRowActions({
               Hủy
             </Button>
           </DialogClose>
-          <Button type="button" onClick={() => deleteOrder()}>
+          <Button type="button" onClick={() => {}}>
             Xóa
           </Button>
         </DialogFooter>

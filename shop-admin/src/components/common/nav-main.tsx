@@ -3,6 +3,7 @@
 import {
   ChartBarStacked,
   ChevronRight,
+  MessagesSquare,
   ReceiptText,
   Settings2,
   Shirt,
@@ -75,6 +76,11 @@ const navMain = [
     title: "Voucher",
     url: "/dashboard/voucher",
     icon: TicketPercent,
+  },
+  {
+    title: "Chat",
+    url: "/dashboard/chat",
+    icon: MessagesSquare,
   },
   {
     title: "Settings",

@@ -97,7 +97,6 @@ export function formatNumber(x: number) {
 const ORDER_STATUS_VIETNAMESE: Record<string, string> = {
   pending: "Chờ xác nhận",
   paid: "Đã thanh toán",
-  shipped: "Đã giao hàng",
   completed: "Hoàn thành",
   cancelled: "Đã hủy",
 };
@@ -114,4 +113,9 @@ export function getOrderStatusInVietnamese(preOrderStatus: OrderStatus) {
 
 export function getPaymenMethodInVietnamese(prePaymentMethod: OrderStatus) {
   return PAYMENT_METHOD_VIETNAMESE[prePaymentMethod] || "Không xác định";
+}
+
+export function getUserId() {
+  const userData = localStorage.getItem("user_info");
+  return userData ? JSON.parse(userData).user_id : 0;
 }
