@@ -14,9 +14,17 @@ export const socketMiddleware = async (socket, next) => {
         return;
     }
 
-    // Validate userId from DB
+    // Validate userRole from socket request
+    const userRole = socket.handshake.query.userRole;
+    if (!userRole) {
+        console.log("Socket request does not contain userRole")
+        next(error);
+        return;
+    }
+
+    // Validate if user exists
     const [existingUser] = await pool.query(
-        "SELECT user_id FROM user WHERE user_id = ?",
+        "SELECT user_id, role FROM user WHERE user_id = ?",
         [userId]
     )
     if (!existingUser.length) {
@@ -24,6 +32,20 @@ export const socketMiddleware = async (socket, next) => {
         return;
     }
 
-    socket.userId = userId;
+    // Validate role
+    if (userRole !== existingUser[0].role) {
+        console.log(userRole)
+        console.log(existingUser[0].role)
+        console.log("Roles from DB and request are not same")
+        next(error);
+        return;
+    }
+
+    // Assign admin id
+    if (userRole === "admin") global.adminId = userId;
+
+    socket.userId = Number(userId);
+    socket.userRole = userRole;
+    global.DbID_to_SocketID.set(socket.userId, socket.id);
     next();
 };

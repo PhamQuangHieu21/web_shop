@@ -170,3 +170,26 @@ export type OrderForm = {
   order_id: number;
   payment_method: PaymentMethod;
 };
+
+export type Conversation = {
+  conversation_id: number;
+  customer_id: number;
+  name: string;
+  last_message: string | null; // Can be null if no message sent yet
+  last_message_time: string;
+};
+
+type MessageStatus = "sent" | "delivered" | "read";
+export type Message = {
+  message_id: number;
+  conversation_id: number;
+  sender_id: number;
+  content: string;
+  status: MessageStatus;
+  created_at: string;
+};
+
+export type NewMessageFromCustomer = {
+  conversation: Conversation;
+  message: Message;
+};

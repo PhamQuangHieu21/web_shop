@@ -6,7 +6,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import chatSocket from "./src/config/chatSocket.js";
+import chatSocket from "./src/socket/chatSocket.js";
 
 // express
 dotenv.config();
@@ -40,4 +40,5 @@ server.listen(PORT, () => {
 
 // chat
 global.DbID_to_SocketID = new Map();
+global.adminId = 0;
 chatSocket(socketIo);

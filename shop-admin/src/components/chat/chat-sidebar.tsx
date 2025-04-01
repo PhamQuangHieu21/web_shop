@@ -5,21 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-// Sample conversations
-const conversations = [
-  {
-    name: "AI Assistant",
-    lastMessage: "Hello! How can I help you today?",
-    time: "10:30 AM",
-    unread: 2,
-    online: true,
-  },
-];
+import { Conversation, Message } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
 
 type ChatSidebarMode = "expanded" | "collapsed";
 
-export default function ChatSidebar() {
+type ChatSidebarProps = {
+  conversations: Conversation[];
+  setCurrentConversation: React.Dispatch<
+    React.SetStateAction<Conversation | undefined>
+  >;
+};
+
+export default function ChatSidebar({
+  conversations,
+  setCurrentConversation,
+}: ChatSidebarProps) {
   const [sidebarMode, setSidebarMode] = useState<ChatSidebarMode>("expanded");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -67,18 +68,18 @@ export default function ChatSidebar() {
         </div>
       )}
 
-      <ScrollArea className="h-[calc(80vh-70px)]">
-        <div className="p-2 flex flex-col">
+      <ScrollArea className="w-80 h-[calc(80vh-70px)]">
+        <div className="w-80 p-2 flex flex-col">
           {filteredConversations.map((conversation, i) => (
-            <Button
+            <div
               key={i}
-              variant="ghost"
-              className={`${
+              className={`cursor-pointer bg-white hover:bg-gray-200 ${
                 sidebarMode === "expanded"
-                  ? "w-full p-2 h-auto mb-1"
-                  : "w-10 h-10 p-0 mb-2"
+                  ? "w-full h-15 p-2 mb-1 rounded-lg"
+                  : "w-10 h-10 p-0 mb-2 rounded-lg"
               }`}
               title={conversation.name}
+              onClick={() => setCurrentConversation(conversation)}
             >
               {sidebarMode === "expanded" ? (
                 <div className="flex items-start gap-2 w-full">
@@ -93,18 +94,18 @@ export default function ChatSidebar() {
                         {conversation.name}
                       </p>
                       <span className="text-xs text-muted-foreground">
-                        {conversation.time}
+                        {formatDate(conversation.last_message_time)}
                       </span>
                     </div>
                     <p className="text-muted-foreground truncate">
-                      {conversation.lastMessage}
+                      {conversation.last_message}
                     </p>
                   </div>
-                  {conversation.unread > 0 && (
+                  {/* {conversation.unread > 0 && (
                     <div className="bg-primary text-primary-foreground text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
                       {conversation.unread}
                     </div>
-                  )}
+                  )} */}
                 </div>
               ) : (
                 <div className="relative flex items-center justify-center w-full h-full">
@@ -113,14 +114,14 @@ export default function ChatSidebar() {
                       {conversation.name.substring(0, 2)}
                     </AvatarFallback>
                   </Avatar>
-                  {conversation.unread > 0 && (
+                  {/* {conversation.unread > 0 && (
                     <div className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 min-w-4 flex items-center justify-center">
                       {conversation.unread}
                     </div>
-                  )}
+                  )} */}
                 </div>
               )}
-            </Button>
+            </div>
           ))}
         </div>
       </ScrollArea>

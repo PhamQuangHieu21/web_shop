@@ -32,11 +32,10 @@ CREATE TABLE user_notification (
 -- Conservation
 CREATE TABLE conversation (
     conversation_id INT AUTO_INCREMENT PRIMARY KEY,
-    admin_id INT NOT NULL,  -- Admin in chat
     customer_id INT NOT NULL, -- Customer in chat
+    name TEXT NOT NULL,
     last_message TEXT,  -- Stores last message sent
     last_message_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- For sorting by latest chat
-    FOREIGN KEY (admin_id) REFERENCES user(user_id) ON DELETE CASCADE,
     FOREIGN KEY (customer_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
@@ -45,13 +44,11 @@ CREATE TABLE message (
     message_id INT AUTO_INCREMENT PRIMARY KEY,
     conversation_id INT NOT NULL, -- Links to the chat
     sender_id INT NOT NULL,  -- User sending the message
-    receiver_id INT NOT NULL, -- User receiving the message
-    message TEXT NOT NULL,
+    content TEXT NOT NULL,
     status ENUM('sent', 'delivered', 'read') DEFAULT 'sent', -- Message status
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (conversation_id) REFERENCES conversation(conversation_id) ON DELETE CASCADE,
-    FOREIGN KEY (sender_id) REFERENCES user(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES user(user_id) ON DELETE CASCADE
+    FOREIGN KEY (sender_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
 -- Order
