@@ -349,6 +349,16 @@ export const getProductDetail = async (req, res) => {
 
         existingProduct.variants = variants;
 
+        const [product_reviews] = await pool.query("SELECT * FROM `review` WHERE product_id = ?",
+            [existingProduct.product_id]);
+
+        if (product_reviews.length > 0) {
+            const result = product_reviews.reduce((acculate, value) => acculate + value.number_of_stars, 0)
+            existingProduct.rating = Math.ceil(1.0 * result / product_reviews.length)
+        } else {
+            existingProduct.rating = 5.0
+        }
+
         setTimeout(() => {
             res.status(200).json({
                 message: "",
