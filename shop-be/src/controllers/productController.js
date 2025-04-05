@@ -343,7 +343,8 @@ export const getProductDetail = async (req, res) => {
              FROM variant v
              JOIN product p ON v.product_id = ?
              JOIN color c ON v.color_id = c.color_id
-             JOIN size s ON v.size_id = s.size_id`,
+             JOIN size s ON v.size_id = s.size_id
+             GROUP BY v.variant_id`,
             [existingProduct.product_id]
         );
 
