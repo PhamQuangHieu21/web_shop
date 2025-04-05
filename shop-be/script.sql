@@ -1,3 +1,7 @@
+CREATE DATABASE shop;
+
+USE shop;
+
 -- User
 CREATE TABLE user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -11,14 +15,47 @@ CREATE TABLE user (
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE notification_token (
-    token_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNIQUE  NOT NULL,
-    token TEXT NOT NULL,
+-- Category
+CREATE TABLE category (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    icon VARCHAR(50) NOT NULL,
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Notification 
+-- Color
+CREATE TABLE color (
+    color_id INT AUTO_INCREMENT PRIMARY KEY,
+    color_name VARCHAR(50) NOT NULL UNIQUE,
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Size
+CREATE TABLE size (
+    size_id INT AUTO_INCREMENT PRIMARY KEY,
+    size_name VARCHAR(50) NOT NULL UNIQUE,
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Voucher
+CREATE TABLE voucher (
+    voucher_id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    discount_type ENUM('fixed', 'percentage') NOT NULL,
+    discount_value INT NOT NULL,
+    min_order_value INT DEFAULT 0,
+    max_discount INT DEFAULT 0,
+    quantity INT DEFAULT 0,
+    start_date DATETIME NOT NULL,
+    end_date DATETIME NOT NULL,
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User Notification
 CREATE TABLE user_notification (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -29,65 +66,14 @@ CREATE TABLE user_notification (
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
--- Conservation
+-- Conversation
 CREATE TABLE conversation (
     conversation_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_id INT NOT NULL, -- Customer in chat
+    customer_id INT NOT NULL,
     name TEXT NOT NULL,
-    last_message TEXT,  -- Stores last message sent
-    last_message_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- For sorting by latest chat
+    last_message TEXT,
+    last_message_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES user(user_id) ON DELETE CASCADE
-);
-
--- Message 
-CREATE TABLE message (
-    message_id INT AUTO_INCREMENT PRIMARY KEY,
-    conversation_id INT NOT NULL, -- Links to the chat
-    sender_id INT NOT NULL,  -- User sending the message
-    content TEXT NOT NULL,
-    status ENUM('sent', 'delivered', 'read') DEFAULT 'sent', -- Message status
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (conversation_id) REFERENCES conversation(conversation_id) ON DELETE CASCADE,
-    FOREIGN KEY (sender_id) REFERENCES user(user_id) ON DELETE CASCADE
-);
-
--- Order
-CREATE TABLE `order` (
-    order_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    total_price INT NOT NULL,
-    discount_amount INT DEFAULT 0, -- Discount amount from voucher
-    final_price INT NOT NULL, -- Total price after discount
-    voucher_id INT DEFAULT NULL, -- Reference to the voucher applied
-    status ENUM('pending', 'paid', 'completed', 'cancelled') DEFAULT 'pending',
-    payment_method ENUM('cod', 'credit_card', 'paypal') NOT NULL,
-    shipping_address TEXT NOT NULL,
-    shipping_fee INT NOT NULL,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (voucher_id) REFERENCES voucher(voucher_id) ON DELETE SET NULL -- If voucher is deleted, keep order valid
-);
-
--- Order Item
-CREATE TABLE order_item (
-    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL,
-    variant_id INT NOT NULL,
-    price INT NOT NULL,
-    quantity INT NOT NULL,
-    subtotal INT NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES `order`(order_id) ON DELETE CASCADE,
-    FOREIGN KEY (variant_id) REFERENCES variant(variant_id) ON DELETE CASCADE
-);
-
--- Category
-CREATE TABLE category (
-    category_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
-    icon VARCHAR(50) NOT NULL,
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Product
@@ -101,7 +87,7 @@ CREATE TABLE product (
     FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE SET NULL
 );
 
--- Product Images
+-- Product Image
 CREATE TABLE product_image (
     product_id INT NOT NULL,
     image_url VARCHAR(255) NOT NULL UNIQUE,
@@ -109,23 +95,7 @@ CREATE TABLE product_image (
     FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
 );
 
--- Product Color
-CREATE TABLE color (
-    color_id INT AUTO_INCREMENT PRIMARY KEY,
-    color_name VARCHAR(50) NOT NULL UNIQUE,
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Product Size
-CREATE TABLE size (
-    size_id INT AUTO_INCREMENT PRIMARY KEY,
-    size_name VARCHAR(50) NOT NULL UNIQUE,
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Product Variant
+-- Variant
 CREATE TABLE variant (
     variant_id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
@@ -141,7 +111,7 @@ CREATE TABLE variant (
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Product Favourites
+-- Product Favourite
 CREATE TABLE product_favourite (
     product_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -149,6 +119,7 @@ CREATE TABLE product_favourite (
     FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
+
 -- Cart
 CREATE TABLE cart (
     cart_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -159,7 +130,7 @@ CREATE TABLE cart (
     modified_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
     FOREIGN KEY (variant_id) REFERENCES variant(variant_id) ON DELETE CASCADE,
-    UNIQUE (user_id, variant_id) -- Ensures a user can't add the same variant multiple times
+    UNIQUE (user_id, variant_id)
 );
 
 -- Review
@@ -175,32 +146,37 @@ CREATE TABLE review (
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Invoice
-CREATE TABLE invoice (
-    invoice_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT,
-    invoice_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    total_money DECIMAL(10,2) NOT NULL,
+-- Order
+CREATE TABLE `order` (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    total_price INT NOT NULL,
+    discount_amount INT DEFAULT 0,
+    final_price INT NOT NULL,
+    voucher_id INT DEFAULT NULL,
+    status ENUM('pending', 'paid', 'completed', 'cancelled') DEFAULT 'pending',
+    payment_method ENUM('cod', 'credit_card', 'paypal') NOT NULL,
+    shipping_address TEXT NOT NULL,
+    shipping_fee INT NOT NULL,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (voucher_id) REFERENCES voucher(voucher_id) ON DELETE SET NULL
+);
+
+-- Order Item
+CREATE TABLE order_item (
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    variant_id INT NOT NULL,
+    price INT NOT NULL,
+    quantity INT NOT NULL,
+    subtotal INT NOT NULL,
     FOREIGN KEY (order_id) REFERENCES `order`(order_id) ON DELETE CASCADE,
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (variant_id) REFERENCES variant(variant_id) ON DELETE CASCADE
 );
 
--- Voucher
-CREATE TABLE voucher (
-    voucher_id INT AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(50) UNIQUE NOT NULL, -- Unique voucher code
-    discount_type ENUM('fixed', 'percentage') NOT NULL, -- Type of discount
-    discount_value INT NOT NULL, -- Discount amount (percentage or fixed)
-    min_order_value INT DEFAULT 0, -- Minimum order value to apply
-    max_discount INT DEFAULT 0, -- Max discount for percentage type
-    quantity INT DEFAULT 0, 
-    start_date DATETIME NOT NULL, 
-    end_date DATETIME NOT NULL, 
-    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
+-- Voucher Usage
 CREATE TABLE voucher_usage (
     usage_id INT AUTO_INCREMENT PRIMARY KEY,
     voucher_id INT NOT NULL,
@@ -212,6 +188,14 @@ CREATE TABLE voucher_usage (
     FOREIGN KEY (order_id) REFERENCES `order`(order_id) ON DELETE CASCADE
 );
 
-
-
-
+-- Message
+CREATE TABLE message (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    conversation_id INT NOT NULL,
+    sender_id INT NOT NULL,
+    content TEXT NOT NULL,
+    status ENUM('sent', 'delivered', 'read') DEFAULT 'sent',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (conversation_id) REFERENCES conversation(conversation_id) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
