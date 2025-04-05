@@ -335,7 +335,7 @@ export const getProductDetail = async (req, res) => {
 
         // Fetch variants
         const [variants] = await pool.query(
-            `SELECT 
+            `SELECT DISTINCT
                 v.variant_id, 
                 s.size_name, 
                 c.color_name, 
@@ -347,7 +347,7 @@ export const getProductDetail = async (req, res) => {
              GROUP BY v.variant_id`,
             [existingProduct.product_id]
         );
-
+        console.log(variants);
         existingProduct.variants = variants;
 
         const [product_reviews] = await pool.query("SELECT * FROM `review` WHERE product_id = ?",
