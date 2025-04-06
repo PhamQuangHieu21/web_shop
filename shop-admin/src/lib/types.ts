@@ -193,3 +193,21 @@ export type NewMessageFromCustomer = {
   conversation: Conversation;
   message: Message;
 };
+
+export type IncomeData = {
+  month: number;
+  income: number;
+};
+
+export type DashboardStatistics = {
+  order_data: {
+    completed_orders: number;
+    cancelled_orders: number;
+    other_orders: number;
+    total_orders: number;
+  };
+  user_count: number;
+  product_count: number;
+  voucher_count: number;
+  income_data: IncomeData[];
+};
