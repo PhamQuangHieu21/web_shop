@@ -6,20 +6,10 @@ import { apiRequest } from "@/lib/utils";
 import { Order } from "@/lib/types";
 import { toast } from "sonner";
 import OrderFilterBar from "@/components/order/order-filter-bar";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import EditOrderForm from "@/components/order/edit-order-form";
 
 export default function OrderPage() {
   const [data, setData] = useState<Order[]>([]);
-  const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>();
 
   useEffect(() => {
     async function fetchOrders() {
@@ -37,28 +27,11 @@ export default function OrderPage() {
   }, []);
 
   return (
-    <main className="container mx-auto sm:px-10">
+    <main className="mx-8">
       <div className="flex justify-between items-end">
         <p className="text-2xl">Danh sách đơn hàng</p>
-        <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
-          <DialogContent className="container sm:max-w-sm overflow-y-auto max-h-[80vh]">
-            <DialogHeader>
-              <DialogTitle>Cập nhật đơn hàng</DialogTitle>
-              <DialogDescription>Điền thông tin về đơn hàng.</DialogDescription>
-              <EditOrderForm
-                setData={setData}
-                setOpenDialog={setOpenEditDialog}
-                selectedOrder={selectedOrder}
-              />
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
       </div>
-      <DataTable
-        loading={loading}
-        columns={columns(setOpenEditDialog, setSelectedOrder, setData)}
-        data={data}
-      >
+      <DataTable loading={loading} columns={columns(setData)} data={data}>
         {(table) => <OrderFilterBar table={table} />}
       </DataTable>
     </main>

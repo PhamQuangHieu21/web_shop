@@ -1,13 +1,10 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../common/data-table-column-header";
-import { UserTableRowActions } from "./data-table-row-actions";
 import { User } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
-export const columns = (
-  setData: React.Dispatch<React.SetStateAction<User[]>>
-): ColumnDef<User>[] => [
+export const columns = (): ColumnDef<User>[] => [
   {
     accessorKey: "user_id",
     header: ({ column }) => <DataTableColumnHeader column={column} title="#" />,
@@ -44,9 +41,5 @@ export const columns = (
     cell: ({ row }) => {
       return <p>{formatDate(row.getValue("modified_date"))}</p>;
     },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => <UserTableRowActions row={row} setData={setData} />,
   },
 ];

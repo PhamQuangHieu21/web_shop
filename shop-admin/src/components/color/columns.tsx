@@ -26,8 +26,10 @@ export const columns = (
         <div className="flex items-center">
           <p>{row.getValue("color_name")}</p>
           <div
-            className="w-7 h-7 ml-2 rounded-md"
-            style={{ backgroundColor: row.getValue("color_name") }}
+            className="w-7 h-7 ml-2 rounded-md shadow-md"
+            style={{
+              backgroundColor: row.getValue("color_name"),
+            }}
           ></div>
         </div>
       );

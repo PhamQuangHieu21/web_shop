@@ -1,4 +1,4 @@
-import { DISCOUNT_TYPE, isOrderCancellable, isValidOrderStatus, isValidOrderStatusToChangeByAdmin, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
+import { DISCOUNT_TYPE, isOrderCancellable, isValidOrderStatus, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
 import { createPaypalOrder } from "../config/paypal.js";
 
@@ -37,24 +37,31 @@ export const changeOrderStatusByAdmin = async (req, res) => {
             });
         }
 
-        if (!isValidOrderStatusToChangeByAdmin(data.new_status)) {
+        // if new status is 'cancelled' then it's invalid
+        if (data.new_status === ORDER_STATUS.CANCELLED) {
             return res.status(400).json({
                 message: RES_MESSAGES.INVALID_ORDER_STATUS,
                 data: "",
             });
         }
 
-        // Change order status to 'cancelled'
+        // if order is already cancelled, we won't change the order status
+        if (data.status === ORDER_STATUS.CANCELLED) {
+            return res.status(400).json({
+                message: RES_MESSAGES.ORDER_ALREADY_CANCELLED,
+                data: "",
+            });
+        }
+
+        // Change order status
         await pool.query("UPDATE `order` SET status = ?, modified_date = NOW() WHERE order_id = ?", [data.new_status, data.order_id]);
 
         // Re-fetch order to return
-        const [returnedOrder] = await pool.query("SELECT modified_date FROM `order` WHERE order_id = ?", [data.order_id]);
+        const [returnedOrder] = await pool.query("SELECT * FROM `order` WHERE order_id = ?", [data.order_id]);
 
         res.status(200).json({
             message: RES_MESSAGES.CHANGE_ORDER_STATUS_SUCCESS,
-            data: {
-                modified_date: returnedOrder[0].modified_date
-            },
+            data: returnedOrder[0]
         });
     } catch (error) {
         console.log("orderController::changeOrderStatusByAdmin => error: " + error);

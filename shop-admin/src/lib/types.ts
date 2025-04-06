@@ -140,7 +140,12 @@ export type VoucherForm = {
   valid_date: { from?: Date; to?: Date };
 };
 
-export type OrderStatus = "pending" | "paid" | "completed" | "cancelled";
+export type OrderStatus =
+  | "pending"
+  | "paid"
+  | "completed"
+  | "cancelled"
+  | "shipping";
 export type PaymentMethod = "cod" | "credit_card" | "paypal";
 
 export type OrderItem = {

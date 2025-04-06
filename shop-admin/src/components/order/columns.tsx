@@ -11,10 +11,6 @@ import {
 } from "@/lib/utils";
 
 export const columns = (
-  setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>>,
-  setSelectedOrder: React.Dispatch<
-    React.SetStateAction<Order | null | undefined>
-  >,
   setData: React.Dispatch<React.SetStateAction<Order[]>>
 ): ColumnDef<Order>[] => [
   {
@@ -102,13 +98,6 @@ export const columns = (
   },
   {
     id: "actions",
-    cell: ({ row }) => (
-      <OrderTableRowActions
-        row={row}
-        setOpenEditDialog={setOpenEditDialog}
-        setSelectedOrder={setSelectedOrder}
-        setData={setData}
-      />
-    ),
+    cell: ({ row }) => <OrderTableRowActions row={row} setData={setData} />,
   },
 ];

@@ -8,36 +8,68 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { Order } from "@/lib/types";
+import { Order, OrderStatus } from "@/lib/types";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { apiRequest } from "@/lib/utils";
+import { apiRequest, getOrderStatusInVietnamese } from "@/lib/utils";
 import { toast } from "sonner";
+import { useState } from "react";
+
+const NewStatuses = {
+  PAID: "paid",
+  COMPLETED: "completed",
+  SHIPPING: "shipping",
+  PENDING: "pending",
+} as const;
+
+const ChangeStatusButtons: OrderStatus[] = [
+  NewStatuses.PAID,
+  NewStatuses.SHIPPING,
+  NewStatuses.COMPLETED,
+  NewStatuses.PENDING,
+];
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
-  setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedOrder: React.Dispatch<
-    React.SetStateAction<TData | null | undefined>
-  >;
   setData: React.Dispatch<React.SetStateAction<Order[]>>;
 }
 
 export function OrderTableRowActions({
   row,
-  setOpenEditDialog,
-  setSelectedOrder,
   setData,
 }: DataTableRowActionsProps<Order>) {
   const order = row.original;
+  const [newStatus, setNewStatus] = useState<OrderStatus>(NewStatuses.PENDING);
+
+  const handleChangeOrderStatus = async () => {
+    if (newStatus === order.status)
+      return toast.success("Trạng thái không thay đổi.");
+    try {
+      const res = await apiRequest<Order>(
+        `/order/change-status-by-admin`,
+        "PUT",
+        { ...order, new_status: newStatus }
+      );
+      if (res.status === 200) {
+        console.log(res.data);
+        setData((prev) =>
+          prev.map((item) =>
+            item.order_id === order.order_id ? (res.data as Order) : item
+          )
+        );
+        toast.success(res.message);
+      } else toast.error(res.message);
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi khi gửi yêu cầu lên server.");
+    }
+  };
 
   return (
     <Dialog>
@@ -52,27 +84,25 @@ export function OrderTableRowActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          <DropdownMenuItem
-            onClick={() => {
-              setSelectedOrder(order);
-              setOpenEditDialog(true);
-            }}
-          >
-            Cập nhật trạng thái
-          </DropdownMenuItem>
-          <DialogTrigger asChild>
-            <DropdownMenuItem>Xóa</DropdownMenuItem>
-          </DialogTrigger>
+          {ChangeStatusButtons.map((item) => (
+            <DialogTrigger asChild key={item}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setNewStatus(item);
+                }}
+              >
+                {getOrderStatusInVietnamese(item)}
+              </DropdownMenuItem>
+            </DialogTrigger>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Bạn chắc chắn muốn chuyển trạng thái đơn hàng?
+            Bạn chắc chắn muốn chuyển trạng thái đơn hàng sang{" "}
+            <b>{getOrderStatusInVietnamese(newStatus)}</b>?
           </DialogTitle>
-          <DialogDescription>
-            Hành động này sẽ không thể thu hồi.
-          </DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
@@ -80,8 +110,8 @@ export function OrderTableRowActions({
               Hủy
             </Button>
           </DialogClose>
-          <Button type="button" onClick={() => {}}>
-            Xóa
+          <Button type="button" onClick={handleChangeOrderStatus}>
+            Chuyển trạng thái
           </Button>
         </DialogFooter>
       </DialogContent>

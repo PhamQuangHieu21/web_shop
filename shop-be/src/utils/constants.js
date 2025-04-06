@@ -10,7 +10,8 @@ export const ORDER_STATUS = {
     PENDING: 'pending',
     PAID: 'paid',
     COMPLETED: 'completed',
-    CANCELLED: 'cancelled'
+    SHIPPING: 'shipping',
+    CANCELLED: 'cancelled',
 }
 
 export function isValidOrderStatus(status) {
@@ -19,10 +20,6 @@ export function isValidOrderStatus(status) {
 
 export function isOrderCancellable(status) {
     return status === ORDER_STATUS.PENDING;
-}
-
-export function isValidOrderStatusToChangeByAdmin(status) {
-    return status === ORDER_STATUS.PAID || status === ORDER_STATUS.COMPLETED;
 }
 
 export const RES_MESSAGES = {
@@ -122,6 +119,7 @@ export const RES_MESSAGES = {
     ORDER_NOT_CANCELLABE: "Đơn hàng không thể hủy bỏ.",
     CANCEL_ORDER_SUCCESS: "Hủy đơn hàng thành công.",
     CHANGE_ORDER_STATUS_SUCCESS: "Sửa trạng thái đơn hàng thành công.",
+    ORDER_ALREADY_CANCELLED: "Không thể thay đổi trạng thái của đơn đã hủy.",
 
     // NOTIFICATION
     ADD_NOTIFICATION: "Thêm thông báo thành công.",

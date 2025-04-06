@@ -95,10 +95,11 @@ export function formatNumber(x: number) {
 }
 
 const ORDER_STATUS_VIETNAMESE: Record<string, string> = {
-  pending: "Chờ xác nhận",
+  pending: "Đang xử lý",
   paid: "Đã thanh toán",
   completed: "Hoàn thành",
   cancelled: "Đã hủy",
+  shipping: "Đang vận chuyển",
 };
 
 export const PAYMENT_METHOD_VIETNAMESE: Record<string, string> = {

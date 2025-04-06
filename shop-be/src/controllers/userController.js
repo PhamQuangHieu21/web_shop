@@ -4,11 +4,9 @@ import { auth, createUserWithEmailAndPassword, sendEmailVerification, signInWith
 import { firebaseAuthErrorHandler, isValidRole } from "../utils/validator.js";
 import pool from "../config/database.js";
 import {
-    EmailAuthCredential, EmailAuthProvider, getAuth, reauthenticateWithCredential, updateCurrentUser, updatePassword,
+    EmailAuthProvider, reauthenticateWithCredential, updatePassword,
     sendPasswordResetEmail
 } from "firebase/auth";
-import { log } from "console";
-import { json } from "stream/consumers";
 
 //#region Admin apis
 export const getAllUsersByAdmin = async (req, res) => {
@@ -84,13 +82,6 @@ export const login = async (req, res) => {
             });
         }
 
-        const isPasswordCorrect = await bcrypt.compare(user.password, existingUser[0].password);
-        if (!isPasswordCorrect)
-            return res.status(401).send({
-                message: RES_MESSAGES.WRONG_USERNAME_PASSWORD,
-                data: "",
-            });
-
         // Login
         await signInWithEmailAndPassword(auth, user.email, user.password);
 
@@ -118,8 +109,6 @@ export const login = async (req, res) => {
         firebaseAuthErrorHandler(error.code, res);
     }
 }
-
-
 
 export const updateUsers = async (req, res) => {
     const user = req.body;

@@ -8,6 +8,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { IncomeData } from "@/lib/types";
+import { formatNumber } from "@/lib/utils";
 
 const chartConfig = {
   income: {
@@ -48,10 +49,19 @@ export function IncomeChart({ incomeData }: IncomeChartProps) {
           axisLine={false}
           tickMargin={8}
           minTickGap={32}
+          tickFormatter={(value) => `T${value}`}
         />
         <ChartTooltip
           cursor={false}
-          content={<ChartTooltipContent indicator="dot" hideLabel />}
+          content={
+            <ChartTooltipContent
+              hideIndicator
+              hideLabel
+              formatter={(value) => {
+                return `Doanh thu ${formatNumber(Number(value))} vnđ`;
+              }}
+            />
+          }
         />
         <Area
           dataKey="income"

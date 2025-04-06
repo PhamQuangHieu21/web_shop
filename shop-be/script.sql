@@ -154,7 +154,7 @@ CREATE TABLE `order` (
     discount_amount INT DEFAULT 0,
     final_price INT NOT NULL,
     voucher_id INT DEFAULT NULL,
-    status ENUM('pending', 'paid', 'completed', 'cancelled') DEFAULT 'pending',
+    status ENUM('pending', 'paid', 'shipping', 'completed', 'cancelled') DEFAULT 'pending',
     payment_method ENUM('cod', 'credit_card', 'paypal') NOT NULL,
     shipping_address TEXT NOT NULL,
     shipping_fee INT NOT NULL,

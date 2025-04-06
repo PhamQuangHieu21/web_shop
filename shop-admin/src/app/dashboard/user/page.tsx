@@ -27,9 +27,9 @@ export default function UserPage() {
   }, []);
 
   return (
-    <main className="container mx-auto sm:px-10">
+    <main className="mx-8">
       <p className="text-2xl">Danh sách người dùng</p>
-      <DataTable loading={loading} columns={columns(setData)} data={data}>
+      <DataTable loading={loading} columns={columns()} data={data}>
         {(table) => <UserFilterBar table={table} />}
       </DataTable>
     </main>

@@ -10,7 +10,7 @@ export const getStatistics = async (req, res) => {
                 COUNT(*) AS total_orders,
                 SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed_orders,
                 SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_orders,
-                SUM(CASE WHEN status NOT IN ('pending', 'paid') THEN 1 ELSE 0 END) AS other_orders
+                SUM(CASE WHEN status IN ('pending', 'paid', 'shipping') THEN 1 ELSE 0 END) AS other_orders
             FROM \`order\``,
             []
         );
@@ -50,13 +50,13 @@ export const getStatistics = async (req, res) => {
             ORDER BY m.month`
         )
 
-        console.log({
-            order_data: orderData[0],
-            userCount: userData[0].user_count,
-            productCount: productData[0].product_count,
-            voucherCount: voucherData[0].voucher_count,
-            income_data: incomeData,
-        })
+        // console.log({
+        //     order_data: orderData[0],
+        //     userCount: userData[0].user_count,
+        //     productCount: productData[0].product_count,
+        //     voucherCount: voucherData[0].voucher_count,
+        //     income_data: incomeData,
+        // })
 
         res.status(200).json({
             message: "",

@@ -22,12 +22,8 @@ export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-between px-2">
-      <div className="flex text-sm text-muted-foreground">
-        Đã chọn {table.getFilteredSelectedRowModel().rows.length} trong{" "}
-        {table.getFilteredRowModel().rows.length} hàng.
-      </div>
-      <div className="flex items-center space-x-2">
+    <div className="flex flex-col sm:flex-row items-center justify-between px-2">
+      <div className="flex items-center space-x-2 mb-1 sm:mb-0">
         <p className="text-sm font-medium">Số hàng</p>
         <Select
           value={`${table.getState().pagination.pageSize}`}

@@ -34,7 +34,7 @@ export default function CategoryPage() {
   }, []);
 
   return (
-    <main className="container mx-auto sm:px-10">
+    <main className="mx-8">
       <div className="flex justify-between items-end">
         <p className="text-2xl">Danh mục sản phẩm</p>
         <EditCategoryDialog
