@@ -24,6 +24,7 @@ export const getAllOrdersByAdmin = async (req, res) => {
 
 export const changeOrderStatusByAdmin = async (req, res) => {
     const data = req.body;
+    console.log(data);
     try {
         // Validate
         const [[orderExists]] = await pool.query(
@@ -432,7 +433,7 @@ export const getOrderDetailByUser = async (req, res) => {
             });
         }
 
-        // Fetch order detail
+        // Fetch order detail với query đã được sửa
         const [rows] = await pool.query(`
                 SELECT 
                     o.order_id,
@@ -447,7 +448,8 @@ export const getOrderDetailByUser = async (req, res) => {
                     s.size_name,
                     c.color_name,
                     o.discount_amount,
-                    o.created_date
+                    o.created_date,
+                    oi.order_item_id
                 FROM \`order\` o
                 JOIN user u ON o.user_id = u.user_id
                 JOIN order_item oi ON o.order_id = oi.order_id
@@ -455,9 +457,12 @@ export const getOrderDetailByUser = async (req, res) => {
                 JOIN product p ON v.product_id = p.product_id
                 JOIN size s ON v.size_id = s.size_id
                 JOIN color c ON v.color_id = c.color_id
-                LEFT JOIN product_image pi ON p.product_id = pi.product_id
-                WHERE o.order_id = ?
-                GROUP BY oi.order_item_id`,
+                LEFT JOIN (
+                    SELECT DISTINCT product_id, MIN(image_url) as image_url
+                    FROM product_image
+                    GROUP BY product_id
+                ) pi ON p.product_id = pi.product_id
+                WHERE o.order_id = ?`,
             [order_id]
         );
 
@@ -471,7 +476,15 @@ export const getOrderDetailByUser = async (req, res) => {
                 phone_number: rows[0].phone_number,
                 address: rows[0].address,
             },
-            items: rows,
+            items: rows.map(item => ({
+                order_item_id: item.order_item_id,
+                product_name: item.product_name,
+                product_image: item.product_image,
+                quantity: item.quantity,
+                price: item.price,
+                size_name: item.size_name,
+                color_name: item.color_name
+            })),
         } : {};
 
         res.status(200).json({
