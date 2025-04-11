@@ -156,9 +156,9 @@ export const createOrder = async (req, res) => {
         let orderResult;
         if (order.voucher_id) {
             [orderResult] = await pool.query(`
-                INSERT INTO \`order\` (user_id, total_price, discount_amount, final_price, voucher_id, payment_method, shipping_address) 
-                VALUES(?, ?, ?, ?, ?, ?, ?)`
-                , [order.user_id, order.total_price, order.discount_amount, order.final_price, order.voucher_id, order.payment_method, order.shipping_address]
+                INSERT INTO \`order\` (user_id, total_price, discount_amount, final_price, voucher_id, payment_method, shipping_address, shipping_fee) 
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?)`
+                , [order.user_id, order.total_price, order.discount_amount, order.final_price, order.voucher_id, order.payment_method, order.shipping_address, order.shipping_fee]
             );
 
             // Reduce voucher quantity
