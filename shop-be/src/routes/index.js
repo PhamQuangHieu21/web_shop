@@ -13,6 +13,7 @@ import orderRoutes from "./orderRoute.js"
 import paymentRoutes from "./paymentRoute.js"
 import notificationRoutes from "./notificationRoute.js"
 import dashboardRoutes from "./dashboardRoute.js"
+import chatRoute from "./chatRoute.js"
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.use("/user", userRoutes);
 router.use("/category", categoryRoutes);
 router.use("/product", productRoutes);
 router.use("/color", colorRoutes);
+router.use("/chat", chatRoute);
 router.use("/size", sizeRoutes);
 router.use("/variant", variantRoutes);
 router.use("/voucher", voucherRoutes);
