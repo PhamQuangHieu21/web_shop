@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { NumericFormat } from "react-number-format";
 
 interface EditVariantFormProps {
   setData: React.Dispatch<React.SetStateAction<Variant[]>>;
@@ -162,7 +163,13 @@ const EditVariantForm = ({
                             key={item.color_id}
                             value={item.color_id.toString()}
                           >
-                            {item.color_name}
+                            <p>{item.color_name}</p>
+                            <div
+                              className="w-7 h-7 ml-2 rounded-md shadow-md"
+                              style={{
+                                backgroundColor: item.color_name,
+                              }}
+                            ></div>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -255,7 +262,19 @@ const EditVariantForm = ({
             <FormItem>
               <FormLabel>Giá</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <NumericFormat
+                  customInput={Input}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  allowNegative={false}
+                  decimalScale={0}
+                  fixedDecimalScale
+                  value={field.value}
+                  onValueChange={(values) => {
+                    field.onChange(values.value);
+                  }}
+                  name={field.name}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -269,7 +288,19 @@ const EditVariantForm = ({
             <FormItem>
               <FormLabel>Số lượng</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <NumericFormat
+                  customInput={Input}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  allowNegative={false}
+                  decimalScale={0}
+                  fixedDecimalScale
+                  value={field.value}
+                  onValueChange={(values) => {
+                    field.onChange(values.value);
+                  }}
+                  name={field.name}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

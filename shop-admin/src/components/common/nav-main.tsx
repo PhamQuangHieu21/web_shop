@@ -5,7 +5,6 @@ import {
   ChevronRight,
   MessagesSquare,
   ReceiptText,
-  Settings2,
   Shirt,
   SquareKanban,
   TicketPercent,
@@ -81,29 +80,6 @@ const navMain = [
     title: "Chat",
     url: "/dashboard/chat",
     icon: MessagesSquare,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings2,
-    items: [
-      {
-        title: "General",
-        url: "#",
-      },
-      {
-        title: "Team",
-        url: "#",
-      },
-      {
-        title: "Billing",
-        url: "#",
-      },
-      {
-        title: "Limits",
-        url: "#",
-      },
-    ],
   },
 ];
 
