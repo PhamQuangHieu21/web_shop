@@ -8,7 +8,7 @@ export const getChatHistory = async (req, res) => {
         // Kiểm tra conversation
         const [conversations] = await pool.query(
             `SELECT conversation_id 
-             FROM conversations 
+             FROM conversation 
              WHERE customer_id = ?`,
             [userId]
         );
@@ -16,7 +16,7 @@ export const getChatHistory = async (req, res) => {
         if (conversations.length === 0) {
             // Tạo conversation mới nếu chưa có
             const [newConversation] = await pool.query(
-                `INSERT INTO conversations (customer_id) VALUES (?)`,
+                `INSERT INTO conversation (customer_id) VALUES (?)`,
                 [userId]
             );
 
@@ -38,7 +38,7 @@ export const getChatHistory = async (req, res) => {
                 m.created_at,
                 u.full_name as sender_name,
                 u.role as sender_role
-             FROM messages m
+             FROM message m
              LEFT JOIN users u ON m.sender_id = u.user_id
              WHERE m.conversation_id = ?
              ORDER BY m.created_at ASC`,
@@ -47,7 +47,7 @@ export const getChatHistory = async (req, res) => {
 
         // Cập nhật trạng thái tin nhắn thành đã đọc
         await pool.query(
-            `UPDATE messages 
+            `UPDATE message 
              SET status = 'read' 
              WHERE conversation_id = ? 
              AND sender_id != ?`,
@@ -81,7 +81,7 @@ export const getChatHistoryPaginated = async (req, res) => {
         // Lấy conversation_id
         const [conversations] = await pool.query(
             `SELECT conversation_id 
-             FROM conversations 
+             FROM conversation 
              WHERE customer_id = ?`,
             [userId]
         );
@@ -105,7 +105,7 @@ export const getChatHistoryPaginated = async (req, res) => {
         // Lấy tổng số tin nhắn
         const [totalRows] = await pool.query(
             `SELECT COUNT(*) as total 
-             FROM messages 
+             FROM message 
              WHERE conversation_id = ?`,
             [conversations[0].conversation_id]
         );
@@ -121,7 +121,7 @@ export const getChatHistoryPaginated = async (req, res) => {
                 m.created_at,
                 u.full_name as sender_name,
                 u.role as sender_role
-             FROM messages m
+             FROM message m
              LEFT JOIN users u ON m.sender_id = u.user_id
              WHERE m.conversation_id = ?
              ORDER BY m.created_at DESC
