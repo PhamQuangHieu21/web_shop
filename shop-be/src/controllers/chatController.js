@@ -122,7 +122,7 @@ export const getChatHistoryPaginated = async (req, res) => {
                 u.full_name as sender_name,
                 u.role as sender_role
              FROM message m
-             LEFT JOIN users u ON m.sender_id = u.user_id
+             LEFT JOIN user u ON m.sender_id = u.user_id
              WHERE m.conversation_id = ?
              ORDER BY m.created_at DESC
              LIMIT ? OFFSET ?`,
