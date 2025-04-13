@@ -25,11 +25,53 @@ export const getStatistics = async (req, res) => {
             `SELECT COUNT(*) AS user_count FROM user WHERE role != 'admin'`,
             []
         )
+
         // Product
         const [productData] = await pool.query(
             `SELECT COUNT(*) AS product_count FROM product;`,
             []
         )
+
+        // Category
+        const [categoryData] = await pool.query(
+            `SELECT COUNT(*) AS category_count FROM category;`,
+            []
+        )
+
+        // Top 5 best-selling products
+        const [top5SellingProducts] = await pool.query(
+            `SELECT 
+                p.product_id,
+                p.product_name,
+                pi.image_url AS product_image,
+                v.variant_id,
+                c.color_name,
+                s.size_name,
+                SUM(oi.quantity) AS total_quantity_sold
+            FROM order_item oi
+            JOIN \`order\` o ON oi.order_id = o.order_id
+            JOIN variant v ON oi.variant_id = v.variant_id
+            JOIN product p ON v.product_id = p.product_id
+            LEFT JOIN color c ON v.color_id = c.color_id
+            LEFT JOIN size s ON v.size_id = s.size_id
+            LEFT JOIN (
+                SELECT product_id, MIN(image_url) AS image_url
+                FROM product_image
+                GROUP BY product_id
+            ) pi ON pi.product_id = p.product_id
+            WHERE o.status != 'cancelled'
+            GROUP BY 
+                p.product_id,
+                p.product_name,
+                pi.image_url,
+                v.variant_id,
+                c.color_name,
+                s.size_name
+            ORDER BY total_quantity_sold DESC
+            LIMIT 5`,
+            []
+        )
+        top5SellingProducts.forEach(item => item.total_quantity_sold = Number(item.total_quantity_sold))
 
         // Income
         const [incomeData] = await pool.query(
@@ -50,14 +92,6 @@ export const getStatistics = async (req, res) => {
             ORDER BY m.month`
         )
 
-        // console.log({
-        //     order_data: orderData[0],
-        //     userCount: userData[0].user_count,
-        //     productCount: productData[0].product_count,
-        //     voucherCount: voucherData[0].voucher_count,
-        //     income_data: incomeData,
-        // })
-
         res.status(200).json({
             message: "",
             data: {
@@ -65,7 +99,9 @@ export const getStatistics = async (req, res) => {
                 user_count: userData[0].user_count,
                 product_count: productData[0].product_count,
                 voucher_count: voucherData[0].voucher_count,
-                income_data: incomeData
+                category_count: categoryData[0].category_count,
+                income_data: incomeData,
+                top_selling_products: top5SellingProducts,
             },
         });
     } catch (error) {

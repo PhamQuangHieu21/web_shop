@@ -5,7 +5,7 @@ import {
   ChevronRight,
   MessagesSquare,
   ReceiptText,
-  Shirt,
+  ShoppingBag,
   SquareKanban,
   TicketPercent,
   Users,
@@ -46,7 +46,7 @@ const navMain = [
   {
     title: "Sản phẩm",
     url: "#",
-    icon: Shirt,
+    icon: ShoppingBag,
     items: [
       {
         title: "Danh sách",

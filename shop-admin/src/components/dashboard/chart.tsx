@@ -49,7 +49,7 @@ export function IncomeChart({ incomeData }: IncomeChartProps) {
           axisLine={false}
           tickMargin={8}
           minTickGap={32}
-          tickFormatter={(value) => `T${value}`}
+          tickFormatter={(value) => `Tháng ${value}`}
         />
         <ChartTooltip
           cursor={false}

@@ -204,6 +204,16 @@ export type IncomeData = {
   income: number;
 };
 
+export type TopSellingProduct = {
+  product_id: number;
+  product_name: string;
+  product_image: string;
+  variant_id: number;
+  color_name: string;
+  size_name: string;
+  total_quantity_sold: number;
+};
+
 export type DashboardStatistics = {
   order_data: {
     completed_orders: number;
@@ -214,5 +224,7 @@ export type DashboardStatistics = {
   user_count: number;
   product_count: number;
   voucher_count: number;
+  category_count: number;
   income_data: IncomeData[];
+  top_selling_products: TopSellingProduct[];
 };

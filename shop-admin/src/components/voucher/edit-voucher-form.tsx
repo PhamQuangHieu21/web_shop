@@ -28,6 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import { NumericFormat } from "react-number-format";
 
 interface EditVoucherFormProps {
   setData: React.Dispatch<React.SetStateAction<Voucher[]>>;
@@ -184,7 +185,19 @@ const EditVoucherForm = ({
             <FormItem>
               <FormLabel>Đơn hàng tối thiểu</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <NumericFormat
+                  customInput={Input}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  allowNegative={false}
+                  decimalScale={0}
+                  fixedDecimalScale
+                  value={field.value}
+                  onValueChange={(values) => {
+                    field.onChange(values.value);
+                  }}
+                  name={field.name}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -198,7 +211,19 @@ const EditVoucherForm = ({
             <FormItem>
               <FormLabel>Khuyến mãi tối đa</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <NumericFormat
+                  customInput={Input}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  allowNegative={false}
+                  decimalScale={0}
+                  fixedDecimalScale
+                  value={field.value}
+                  onValueChange={(values) => {
+                    field.onChange(values.value);
+                  }}
+                  name={field.name}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -212,7 +237,19 @@ const EditVoucherForm = ({
             <FormItem>
               <FormLabel>Số lượng</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <NumericFormat
+                  customInput={Input}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  allowNegative={false}
+                  decimalScale={0}
+                  fixedDecimalScale
+                  value={field.value}
+                  onValueChange={(values) => {
+                    field.onChange(values.value);
+                  }}
+                  name={field.name}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
