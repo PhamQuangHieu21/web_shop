@@ -25,7 +25,7 @@ export const signupFormSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Mật khẩu không khớp",
+    message: "Mật khẩu không khớp.",
     path: ["confirmPassword"], // Attaches error to confirmPassword field
   });
 
@@ -170,3 +170,29 @@ export const editOrderFormSchema = z.object({
   order_id: z.string(),
   payment_method: z.enum(["cod", "credit_card", "paypal"]),
 });
+
+export const accountInfoFormSchema = z.object({
+  email: z.string().email({ message: "Email không hợp lệ." }),
+  full_name: z.string().min(1, { message: "Nhập họ và tên." }),
+  phone_number: z
+    .string()
+    .regex(/^\+?[0-9]\d{1,10}$/, { message: "Số điện thoại không hợp lệ." }),
+  address: z.string().min(1, { message: "Nhập địa chỉ." }),
+});
+
+export const changePasswordFormSchema = z
+  .object({
+    oldPassword: z
+      .string()
+      .min(6, { message: "Mật khẩu phải có độ dài từ 6 đến 15 ký tự." })
+      .max(15, { message: "Mật khẩu phải có độ dài từ 6 đến 15 ký tự." }),
+    newPassword: z
+      .string()
+      .min(6, { message: "Mật khẩu phải có độ dài từ 6 đến 15 ký tự." })
+      .max(15, { message: "Mật khẩu phải có độ dài từ 6 đến 15 ký tự." }),
+    confirmNewPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Mật khẩu không khớp",
+    path: ["confirmNewPassword."],
+  });

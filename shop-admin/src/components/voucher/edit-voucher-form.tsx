@@ -171,7 +171,19 @@ const EditVoucherForm = ({
             <FormItem>
               <FormLabel>Giá trị khuyến mãi</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <NumericFormat
+                  customInput={Input}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  allowNegative={false}
+                  decimalScale={0}
+                  fixedDecimalScale
+                  value={field.value}
+                  onValueChange={(values) => {
+                    field.onChange(values.value);
+                  }}
+                  name={field.name}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

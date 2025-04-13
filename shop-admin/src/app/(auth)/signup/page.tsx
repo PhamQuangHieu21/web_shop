@@ -27,6 +27,7 @@ import { User } from "@/lib/types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
+import { PatternFormat } from "react-number-format";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -121,7 +122,16 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel>Số điện thoại</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <PatternFormat
+                              customInput={Input}
+                              format="#### ### ###"
+                              mask="_"
+                              value={field.value}
+                              onValueChange={(values) => {
+                                field.onChange(values.value);
+                              }}
+                              name={field.name}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

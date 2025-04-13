@@ -34,7 +34,7 @@ export default function VariantPage() {
   }, []);
 
   return (
-    <main className="mx-8">
+    <main className="mx-4">
       <div className="flex justify-between items-end">
         <p className="text-2xl">Danh sách loại sản phẩm</p>
         <EditVariantDialog

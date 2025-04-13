@@ -1,5 +1,5 @@
 "use client";
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, CircleUserRound, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -73,29 +73,15 @@ export function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            {/* <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup> */}
-            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                router.push("/dashboard/settings");
+              }}
+            >
+              <CircleUserRound />
+              Cài đặt người dùng
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
                 localStorage.clear();

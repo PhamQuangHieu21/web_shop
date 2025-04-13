@@ -85,6 +85,13 @@ export const login = async (req, res) => {
         // Login
         await signInWithEmailAndPassword(auth, user.email, user.password);
 
+        // Sync password to DB each time user logs in
+        const hashedPassword = await bcrypt.hash(user.password, 12);
+        await pool.query(
+            "UPDATE `user` SET password = ? WHERE email = ?",
+            [hashedPassword, user.email]
+        );
+
         if (auth.currentUser && auth.currentUser.emailVerified) {
             // Save device token for firebase notification
             // await pool.query(
@@ -112,19 +119,15 @@ export const login = async (req, res) => {
 
 export const updateUsers = async (req, res) => {
     const user = req.body;
-    const { id } = req.params;
     try {
-        console.log("user = " + user);
-        console.log("id = " + user.user_id);
         // Validate
-        const [existingCategory] = await pool.query(
+        const [existingUser] = await pool.query(
             "SELECT * FROM `user` WHERE user_id = ?",
             [user.user_id]
         );
-        if (existingCategory.length === 0) {
-            console.log("updateUsers")
+        if (existingUser.length === 0) {
             return res.status(400).send({
-                message: RES_MESSAGES.CATEGORY_NAME_NOT_EXIST,
+                message: RES_MESSAGES.USER_NOT_EXIST,
                 data: "",
             });
         }
@@ -136,11 +139,11 @@ export const updateUsers = async (req, res) => {
         );
 
         res.status(200).json({
-            message: RES_MESSAGES.UPDATE_PRODUCT_SUCCESS,
+            message: RES_MESSAGES.UPDATE_USER_SUCCESS,
             data: [],
         });
     } catch (error) {
-        console.log("productController::updateUsers => error: " + error);
+        console.log("userController::updateUsers => error: " + error);
         res.status(500).send({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",
@@ -151,19 +154,32 @@ export const updateUsers = async (req, res) => {
 export const updatedPassword = async (req, res) => {
     const { email, passwordOld, passwordNew } = req.body;
     const { id } = req.params;
-
     try {
         // Log input parameters for debugging
         console.log("email = " + email);
         console.log("passwordOld = " + passwordOld);
 
-        // Authenticate the user with the old password
-        const userCredential = await signInWithEmailAndPassword(auth, email, passwordOld);
+        // Validate
         const currentUser = auth.currentUser;
-
-        if (!currentUser) {
+        const [existingUser] = await pool.query(
+            "SELECT * FROM `user` WHERE user_id = ?",
+            [id]
+        );
+        if (!currentUser || existingUser.length === 0) {
             return res.status(401).send({
-                message: "Authentication failed. No current user found.",
+                message: RES_MESSAGES.USER_NOT_EXIST,
+                data: "",
+            });
+        }
+
+        // Check if old password is correct
+        const isOldPasswordCorrect = await bcrypt.compare(
+            passwordOld,
+            existingUser[0].password
+        );
+        if (!isOldPasswordCorrect) {
+            return res.status(403).send({
+                message: RES_MESSAGES.OLD_PASSWORD_WRONG,
                 data: "",
             });
         }
@@ -184,25 +200,16 @@ export const updatedPassword = async (req, res) => {
             "UPDATE `user` SET password = ?, modified_date = NOW() WHERE user_id = ?",
             [hashedPassword, id]
         );
-
         console.log("Password updated SUCCESS in the database");
 
         // Send a success response
         res.status(200).send({
-            message: "Password updated SUCCESS",
+            message: RES_MESSAGES.CHANGE_PASSWORD_SUCCESS,
             data: "",
         });
     } catch (error) {
-        console.error("Error updating password:", error);
-        // Handle Firebase authentication errors
-        if (error.code) {
-            return firebaseAuthErrorHandler(error.code, res);
-        }
-        // Send a general error response
-        res.status(500).send({
-            message: "An error occurred while updating the password",
-            data: "",
-        });
+        console.error("userController::updatedPassword => error: " + error);
+        firebaseAuthErrorHandler(error.code, res);
     }
 }
 export const resetPassword = async (req, res) => {

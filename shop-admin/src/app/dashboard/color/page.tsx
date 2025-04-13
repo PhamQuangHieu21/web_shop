@@ -34,7 +34,7 @@ export default function ColorPage() {
   }, []);
 
   return (
-    <main className="mx-8">
+    <main className="mx-4">
       <div className="flex justify-between items-end">
         <p className="text-2xl">Danh sách màu sản phẩm</p>
         <EditColorDialog
