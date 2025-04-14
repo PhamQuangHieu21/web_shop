@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Conversation, Message } from "@/lib/types";
+import { Conversation } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
 type ChatSidebarMode = "expanded" | "collapsed";
@@ -38,7 +38,7 @@ export default function ChatSidebar({
         <div className="p-3 border-b h-[70px]">
           <div className="flex items-center gap-2">
             <Input
-              placeholder="Search conversations..."
+              placeholder="Tìm kiếm cuộc trò chuyện..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-9"

@@ -1,11 +1,12 @@
 import admin from "firebase-admin"
-
-import serviceAccount from "./shop-be-6b0ff-firebase-adminsdk-fbsvc-92c67dc421.json"
+import serviceAccount from "./shop-be-6b0ff-firebase-adminsdk-fbsvc-92c67dc421.json" assert { type: "json" }
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://shop-be-6b0ff-default-rtdb.asia-southeast1.firebasedatabase.app"
 });
+
+const adminAuth = admin.auth();
 
 async function pushNotificationToAndroid(title, content) {
     const message = {
@@ -23,6 +24,7 @@ async function pushNotificationToAndroid(title, content) {
 }
 
 export {
-    pushNotificationToAndroid
+    pushNotificationToAndroid,
+    adminAuth
 };
 

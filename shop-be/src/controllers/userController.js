@@ -4,9 +4,9 @@ import { auth, createUserWithEmailAndPassword, sendEmailVerification, signInWith
 import { firebaseAuthErrorHandler, isValidRole } from "../utils/validator.js";
 import pool from "../config/database.js";
 import {
-    EmailAuthProvider, reauthenticateWithCredential, updatePassword,
     sendPasswordResetEmail
 } from "firebase/auth";
+import { adminAuth } from "../config/firebaseAdmin.js"
 
 //#region Admin apis
 export const getAllUsersByAdmin = async (req, res) => {
@@ -160,12 +160,11 @@ export const updatedPassword = async (req, res) => {
         console.log("passwordOld = " + passwordOld);
 
         // Validate
-        const currentUser = auth.currentUser;
         const [existingUser] = await pool.query(
             "SELECT * FROM `user` WHERE user_id = ?",
             [id]
         );
-        if (!currentUser || existingUser.length === 0) {
+        if (existingUser.length === 0) {
             return res.status(401).send({
                 message: RES_MESSAGES.USER_NOT_EXIST,
                 data: "",
@@ -184,13 +183,12 @@ export const updatedPassword = async (req, res) => {
             });
         }
 
-        // Reauthenticate the user
-        const credentials = EmailAuthProvider.credential(email, passwordOld);
-        await reauthenticateWithCredential(currentUser, credentials);
-
-        // Update the password
-        await updatePassword(currentUser, passwordNew);
-        console.log("Password updated SUCCESS in Firebase");
+        // Update password in Firebase using firebase admin
+        const firebaseUser = await adminAuth.getUserByEmail(email);
+        await adminAuth.updateUser(firebaseUser.uid, {
+            password: passwordNew,
+        });
+        console.log("Password updated in Firebase Admin");
 
         // Hash the new password
         const hashedPassword = await bcrypt.hash(passwordNew, 12);
@@ -212,6 +210,7 @@ export const updatedPassword = async (req, res) => {
         firebaseAuthErrorHandler(error.code, res);
     }
 }
+
 export const resetPassword = async (req, res) => {
     const { email } = req.body;
 
