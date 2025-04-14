@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import { IncomeChart } from "@/components/dashboard/chart";
 import { DashboardStatistics } from "@/lib/types";
-import { apiRequest, formatNumber } from "@/lib/utils";
+import { apiRequest, cn, formatNumber } from "@/lib/utils";
 import {
+  CalendarIcon,
   ChartBarStacked,
   FileChartPie,
   FileCheck2,
@@ -17,18 +18,27 @@ import { toast } from "sonner";
 import { DataTable } from "@/components/common/data-table";
 import { columns } from "@/components/dashboard/columns";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { addDays, format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { Calendar } from "@/components/ui/calendar";
+import { vi } from "date-fns/locale";
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardStatistics>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 20),
+  });
+
+  useEffect(() => {
+    console.log(date);
+  }, [date]);
 
   useEffect(() => {
     async function fetchStatistics() {
@@ -39,7 +49,6 @@ export default function DashboardPage() {
         );
         if (res.status === 200) setData(res.data as DashboardStatistics);
         else toast.error(res.message);
-        console.log(res.data);
       } catch (error) {
         toast.error("Đã xảy ra lỗi khi lấy dữ liệu thống kê.");
       }
@@ -51,21 +60,47 @@ export default function DashboardPage() {
 
   return (
     <div className="px-4">
-      <div className="flex items-center mb-5">
-        <p className="text-2xl">Tổng quan</p>
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a fruit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Khoảng thời gian</SelectLabel>
-              <SelectItem value="apple">Apple</SelectItem>
-              <SelectItem value="banana">Banana</SelectItem>
-              <SelectItem value="blueberry">Blueberry</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center mb-5">
+        <p className="text-2xl mb-2 sm:mb-0">Tổng quan</p>
+        <div className="grid gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant={"outline"}
+                className={cn(
+                  "justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, "LLL dd, y", { locale: vi })} -{" "}
+                      {format(date.to, "LLL dd, y", { locale: vi })}
+                    </>
+                  ) : (
+                    format(date.from, "LLL dd, y", { locale: vi })
+                  )
+                ) : (
+                  <span>Chọn ngày</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
+                locale={vi}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* ORDER COUNT */}
