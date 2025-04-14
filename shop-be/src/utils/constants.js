@@ -8,7 +8,6 @@ export const DISCOUNT_TYPE = {
 
 export const ORDER_STATUS = {
     PENDING: 'pending',
-    PAID: 'paid',
     COMPLETED: 'completed',
     SHIPPING: 'shipping',
     CANCELLED: 'cancelled',

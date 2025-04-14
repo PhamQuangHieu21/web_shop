@@ -2,12 +2,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../common/data-table-column-header";
 import { OrderTableRowActions } from "./data-table-row-actions";
-import { Order } from "@/lib/types";
+import { Order, OrderStatus } from "@/lib/types";
 import {
   formatDate,
   formatNumber,
   getOrderStatusInVietnamese,
   getPaymenMethodInVietnamese,
+  ORDER_STATUS_COLOR,
 } from "@/lib/utils";
 
 export const columns = (
@@ -58,7 +59,15 @@ export const columns = (
       <DataTableColumnHeader column={column} title="Trạng thái" />
     ),
     cell: ({ row }) => {
-      return <p>{getOrderStatusInVietnamese(row.getValue("status"))}</p>;
+      const status: OrderStatus = row.getValue("status");
+      return (
+        <p
+          className="text-white w-fit p-1.5 rounded-md"
+          style={{ backgroundColor: ORDER_STATUS_COLOR[status] }}
+        >
+          {getOrderStatusInVietnamese(status)}
+        </p>
+      );
     },
   },
   {

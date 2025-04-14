@@ -96,7 +96,6 @@ export function formatNumber(x: number) {
 
 const ORDER_STATUS_VIETNAMESE: Record<string, string> = {
   pending: "Đang xử lý",
-  paid: "Đã thanh toán",
   completed: "Hoàn thành",
   cancelled: "Đã hủy",
   shipping: "Đang vận chuyển",
@@ -106,6 +105,13 @@ export const PAYMENT_METHOD_VIETNAMESE: Record<string, string> = {
   cod: "Thanh toán khi nhận hàng",
   credit_card: "Thẻ tín dụng",
   paypal: "PayPal",
+};
+
+export const ORDER_STATUS_COLOR: Record<OrderStatus, string> = {
+  pending: "#2196F3",
+  completed: "#4CAF50",
+  shipping: "#FF9800",
+  cancelled: "#F44336",
 };
 
 export function getOrderStatusInVietnamese(preOrderStatus: OrderStatus) {

@@ -177,7 +177,7 @@ SELECT
     CASE WHEN RAND() < 0.3 THEN (SELECT voucher_id FROM voucher ORDER BY RAND() LIMIT 1) ELSE NULL END, -- Randomly assign a voucher (if voucher table exists)
     CASE FLOOR(RAND() * 4)
         WHEN 0 THEN 'pending'
-        WHEN 1 THEN 'paid'
+        WHEN 1 THEN 'shipping'
         WHEN 2 THEN 'completed'
         ELSE 'cancelled'
     END,

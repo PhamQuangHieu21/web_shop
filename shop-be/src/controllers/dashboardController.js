@@ -10,7 +10,7 @@ export const getStatistics = async (req, res) => {
                 COUNT(*) AS total_orders,
                 SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed_orders,
                 SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_orders,
-                SUM(CASE WHEN status IN ('pending', 'paid', 'shipping') THEN 1 ELSE 0 END) AS other_orders
+                SUM(CASE WHEN status IN ('pending', 'shipping') THEN 1 ELSE 0 END) AS other_orders
             FROM \`order\``,
             []
         );

@@ -1,4 +1,3 @@
-import { RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
 
 export const getChatHistory = async (req, res) => {

@@ -23,14 +23,12 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 const NewStatuses = {
-  PAID: "paid",
   COMPLETED: "completed",
   SHIPPING: "shipping",
   PENDING: "pending",
 } as const;
 
 const ChangeStatusButtons: OrderStatus[] = [
-  NewStatuses.PAID,
   NewStatuses.SHIPPING,
   NewStatuses.COMPLETED,
   NewStatuses.PENDING,
