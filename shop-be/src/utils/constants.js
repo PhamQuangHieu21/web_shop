@@ -21,6 +21,11 @@ export function isOrderCancellable(status) {
     return status === ORDER_STATUS.PENDING;
 }
 
+export function isOrderCompletable(status) {
+    return status === ORDER_STATUS.SHIPPING;
+}
+
+
 export const RES_MESSAGES = {
     SERVER_ERROR: "Đã xảy ra lỗi từ phía server. Quý khách vui lòng thử lại sau.",
 

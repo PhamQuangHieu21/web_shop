@@ -1,4 +1,4 @@
-import { DISCOUNT_TYPE, isOrderCancellable, isValidOrderStatus, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
+import { DISCOUNT_TYPE, isOrderCancellable, isOrderCompletable, isValidOrderStatus, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
 import { createPaypalOrder } from "../config/paypal.js";
 
@@ -563,6 +563,54 @@ export const cancelOrder = async (req, res) => {
         });
     } catch (error) {
         console.log("orderController::cancelOrder => error: " + error);
+        res.status(500).json({
+            message: RES_MESSAGES.SERVER_ERROR,
+            data: "",
+        });
+    }
+};
+export const completedOrder = async (req, res) => {
+    const data = req.body;
+    console.log("dataa = " + data);
+
+    try {
+        // Validate
+        const [[userExists]] = await pool.query(
+            "SELECT COUNT(*) AS count FROM `user` WHERE user_id = ?",
+            [data.user_id]
+        );
+        if (!userExists.count) {
+            return res.status(404).json({
+                message: RES_MESSAGES.USER_NOT_EXIST,
+                data: "",
+            });
+        }
+
+        const [existingOrder] = await pool.query(
+            "SELECT status, voucher_id FROM `order` WHERE order_id = ?",
+            [data.order_id]
+        );
+        if (!existingOrder.length) {
+            return res.status(404).json({
+                message: RES_MESSAGES.ORDER_NOT_EXIST,
+                data: "",
+            });
+        }
+        if (!isOrderCompletable(existingOrder[0].status)) {
+            return res.status(409).json({
+                message: RES_MESSAGES.ORDER_NOT_CANCELLABE,
+                data: "",
+            });
+        }
+
+        // change order status to 'cancelled'
+        await pool.query("UPDATE `order` SET status = ?, modified_date = NOW() WHERE order_id = ?", [ORDER_STATUS.COMPLETED, data.order_id]);
+        res.status(200).json({
+            message: RES_MESSAGES.CANCEL_ORDER_SUCCESS,
+            data: "",
+        });
+    } catch (error) {
+        console.log("orderController::completedOrder => error: " + error);
         res.status(500).json({
             message: RES_MESSAGES.SERVER_ERROR,
             data: "",

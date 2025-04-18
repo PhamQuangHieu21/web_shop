@@ -306,13 +306,13 @@ export const getAllProductsFavourite = async (req, res) => {
 
 // App api
 export const getProductDetail = async (req, res) => {
-    const { id } = req.params;
-    console.log(id)
+    const { user_id, product_id } = req.body;
+    // console.log(id)
     try {
         // Validate
         const [[existingProduct]] = await pool.query(
             "SELECT * FROM `product` WHERE product_id = ?",
-            [id]
+            [product_id]
         );
         if (!existingProduct) {
             return res.status(404).send({
@@ -359,6 +359,12 @@ export const getProductDetail = async (req, res) => {
         } else {
             existingProduct.rating = 5.0
         }
+        const [product_favorites] = await pool.query(
+            "SELECT * FROM `product_favourite` WHERE product_id = ? and user_id = ?",
+            [existingProduct.product_id, user_id]
+        );
+        if (product_favorites.length > 0) existingProduct.isFavourite = true;
+        else existingProduct.isFavourite = false;
 
         setTimeout(() => {
             res.status(200).json({

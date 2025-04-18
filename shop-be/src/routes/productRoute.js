@@ -20,7 +20,7 @@ router.put(
     updateProduct
 );
 router.delete("/delete/:id", deleteProduct)
-router.get("/detail/:id", getProductDetail)
+router.post("/detail", getProductDetail)
 router.get("/category_id/:id", getAllProductsByCategoryId)
 router.get("/all-list", getAllProductsList)
 
