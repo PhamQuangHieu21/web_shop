@@ -1,5 +1,7 @@
-import admin from "firebase-admin"
-import serviceAccount from "./shop-be-6b0ff-firebase-adminsdk-fbsvc-92c67dc421.json" assert { type: "json" }
+import admin from "firebase-admin";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const serviceAccount = require("./shop-be-6b0ff-firebase-adminsdk-fbsvc-92c67dc421.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -8,7 +10,7 @@ admin.initializeApp({
 
 const adminAuth = admin.auth();
 
-async function pushNotificationToAndroid(title, content) {
+async function pushNotificationToAndroid(title, content, tokenDevice) {
     const message = {
         android: {
             priority: "High",

@@ -82,17 +82,28 @@ export function OrderTableRowActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          {ChangeStatusButtons.map((item) => (
-            <DialogTrigger asChild key={item}>
-              <DropdownMenuItem
-                onClick={() => {
-                  setNewStatus(item);
-                }}
-              >
-                {getOrderStatusInVietnamese(item)}
-              </DropdownMenuItem>
-            </DialogTrigger>
-          ))}
+          {ChangeStatusButtons.map((item) => {
+            let disabled = false;
+            if (order.status === NewStatuses.PENDING) {
+              disabled = !(item === NewStatuses.SHIPPING || item === NewStatuses.CANCELLED);
+            } else if (order.status === NewStatuses.SHIPPING) {
+              disabled = !(item === NewStatuses.COMPLETED || item === NewStatuses.CANCELLED);
+            } else {
+              disabled = true;
+            }
+            return (
+              <DialogTrigger asChild key={item}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setNewStatus(item);
+                  }}
+                  disabled={disabled || item === order.status}
+                >
+                  {getOrderStatusInVietnamese(item)}
+                </DropdownMenuItem>
+              </DialogTrigger>
+            );
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogContent>
