@@ -26,12 +26,14 @@ const NewStatuses = {
   COMPLETED: "completed",
   SHIPPING: "shipping",
   PENDING: "pending",
+  CANCELLED: "cancelled",
 } as const;
 
 const ChangeStatusButtons: OrderStatus[] = [
   NewStatuses.SHIPPING,
   NewStatuses.COMPLETED,
   NewStatuses.PENDING,
+  NewStatuses.CANCELLED,
 ];
 
 interface DataTableRowActionsProps<TData> {

@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { SERVER_URL } from "./data";
 import { ApiResponse, OrderStatus } from "./types";
+import { DateRange } from "react-day-picker";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -93,6 +94,11 @@ export const formatDateWithoutHour = (date: string | Date): string => {
 export function formatNumber(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
+
+export const isValidDateRange = (date?: DateRange) => {
+  if (!date || !date.from || !date.to) return false;
+  return date.to > date.from;
+};
 
 const ORDER_STATUS_VIETNAMESE: Record<string, string> = {
   pending: "Đang xử lý",

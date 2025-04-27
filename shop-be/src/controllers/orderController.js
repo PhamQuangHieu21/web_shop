@@ -1,4 +1,4 @@
-import { DISCOUNT_TYPE, isOrderCancellable, isOrderCompletable, isValidOrderStatus, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
+import { DISCOUNT_TYPE, isOrderCancellable, isOrderCompletable, isValidOrderStatus, isValidStatusTransition, isValidOrderStatus, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
 import { createPaypalOrder } from "../config/paypal.js";
 
@@ -27,31 +27,47 @@ export const changeOrderStatusByAdmin = async (req, res) => {
     console.log(data);
     try {
         // Validate
-        const [[orderExists]] = await pool.query(
-            "SELECT COUNT(*) AS count FROM `order` WHERE order_id = ?",
+        const [existingOrder] = await pool.query(
+            "SELECT * FROM `order` WHERE order_id = ?",
             [data.order_id]
         );
-        if (!orderExists.count) {
+        if (!existingOrder.length) {
             return res.status(404).json({
                 message: RES_MESSAGES.ORDER_NOT_EXIST,
                 data: "",
             });
         }
 
-        // if new status is 'cancelled' then it's invalid
-        if (data.new_status === ORDER_STATUS.CANCELLED) {
+        // Check if new status is valid with current status (pending -> shipping -> completed, cancelled)
+        if (!isValidStatusTransition(data.status, data.new_status)) {
             return res.status(400).json({
-                message: RES_MESSAGES.INVALID_ORDER_STATUS,
+                message: RES_MESSAGES.INVALID_ORDER_STATUS_TRANSITION,
                 data: "",
             });
         }
 
-        // if order is already cancelled, we won't change the order status
-        if (data.status === ORDER_STATUS.CANCELLED) {
-            return res.status(400).json({
-                message: RES_MESSAGES.ORDER_ALREADY_CANCELLED,
-                data: "",
-            });
+        if (data.new_status === ORDER_STATUS.CANCELLED) {
+            // Recover variant quantity after cancelling the order
+            const [orderItems] = await pool.query("SELECT variant_id, quantity FROM order_item WHERE order_id = ?", [data.order_id]);
+            for (let orderItem of orderItems) {
+                await pool.query(
+                    "UPDATE variant SET quantity = quantity + ? WHERE variant_id = ?",
+                    [orderItem.quantity, orderItem.variant_id]
+                );
+            }
+
+            // Recover the voucher if applied
+            if (existingOrder[0].voucher_id) {
+                await pool.query(
+                    "DELETE FROM voucher_usage WHERE user_id = ? AND voucher_id = ?",
+                    [data.user_id, existingOrder[0].voucher_id]
+                );
+
+                await pool.query(
+                    "UPDATE voucher SET quantity = quantity + 1 WHERE voucher_id = ?",
+                    [existingOrder[0].voucher_id]
+                );
+            }
         }
 
         // Change order status

@@ -195,7 +195,7 @@ export type NewMessageFromCustomer = {
 };
 
 export type IncomeData = {
-  month: number;
+  day: number;
   income: number;
 };
 
@@ -209,17 +209,19 @@ export type TopSellingProduct = {
   total_quantity_sold: number;
 };
 
-export type DashboardStatistics = {
+export type CommonStatistics = {
+  user_count: number;
+  product_count: number;
+  voucher_count: number;
+  category_count: number;
+};
+
+export type OrderAndProductStatistics = {
   order_data: {
     completed_orders: number;
     cancelled_orders: number;
     other_orders: number;
     total_orders: number;
   };
-  user_count: number;
-  product_count: number;
-  voucher_count: number;
-  category_count: number;
-  income_data: IncomeData[];
   top_selling_products: TopSellingProduct[];
 };

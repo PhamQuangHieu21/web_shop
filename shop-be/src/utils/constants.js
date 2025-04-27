@@ -13,6 +13,17 @@ export const ORDER_STATUS = {
     CANCELLED: 'cancelled',
 }
 
+export function isValidStatusTransition(currentStatus, nextStatus) {
+    const validTransitions = {
+        pending: ['shipping', 'cancelled'],
+        shipping: ['completed', 'cancelled'],
+        completed: ['cancelled'],
+        cancelled: [],
+    };
+
+    return validTransitions[currentStatus]?.includes(nextStatus) || false;
+}
+
 export function isValidOrderStatus(status) {
     return Object.values(ORDER_STATUS).includes(status);
 }
@@ -25,6 +36,12 @@ export function isOrderCompletable(status) {
     return status === ORDER_STATUS.SHIPPING;
 }
 
+export function convertDateToUTC7(dateString) {
+    const date = new Date(dateString);
+    const offsetMs = 7 * 60 * 60 * 1000;
+    const utc7Date = new Date(date.getTime() + offsetMs);
+    return utc7Date.toISOString().slice(0, 19).replace('T', ' '); // MySQL DATETIME format
+}
 
 export const RES_MESSAGES = {
     SERVER_ERROR: "Đã xảy ra lỗi từ phía server. Quý khách vui lòng thử lại sau.",
@@ -124,6 +141,7 @@ export const RES_MESSAGES = {
     CANCEL_ORDER_SUCCESS: "Hủy đơn hàng thành công.",
     CHANGE_ORDER_STATUS_SUCCESS: "Sửa trạng thái đơn hàng thành công.",
     ORDER_ALREADY_CANCELLED: "Không thể thay đổi trạng thái của đơn đã hủy.",
+    INVALID_ORDER_STATUS_TRANSITION: "Trạng thái mới không hợp lệ với trạng thái hiện tại.",
 
     // NOTIFICATION
     ADD_NOTIFICATION: "Thêm thông báo thành công.",

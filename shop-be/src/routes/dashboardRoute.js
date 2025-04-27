@@ -1,8 +1,10 @@
 import express from "express";
-import { getStatistics } from "../controllers/dashboardController.js";
+import { getCommonStatistics, getIncomeData, getOrderAndTopProductStatistics } from "../controllers/dashboardController.js";
 
 const router = express.Router();
 
-router.get("/statistics", getStatistics)
+router.get("/common-statistics", getCommonStatistics)
+router.post("/order-and-top-products", getOrderAndTopProductStatistics)
+router.post("/income", getIncomeData)
 
 export default router;
