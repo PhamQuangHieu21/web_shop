@@ -1,4 +1,4 @@
-import { DISCOUNT_TYPE, isOrderCancellable, isOrderCompletable, isValidOrderStatus, isValidStatusTransition, isValidOrderStatus, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
+import { DISCOUNT_TYPE, isOrderCancellable, isOrderCompletable, isValidOrderStatus, isValidStatusTransition, ORDER_STATUS, RES_MESSAGES } from "../utils/constants.js";
 import pool from "../config/database.js";
 import { createPaypalOrder } from "../config/paypal.js";
 

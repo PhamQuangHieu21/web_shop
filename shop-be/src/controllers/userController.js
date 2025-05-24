@@ -210,28 +210,41 @@ export const updatedPassword = async (req, res) => {
         firebaseAuthErrorHandler(error.code, res);
     }
 }
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 
 export const resetPassword = async (req, res) => {
     const { email } = req.body;
 
     try {
         // Log input parameters for debugging
-        console.log("email = " + email);
-        sendPasswordResetEmail(auth, email).then(() => {
-            // Send a success response
-            res.status(200).send({
-                message: RES_MESSAGES.RESET_PASSWORD,
+        if (isValidEmail(email)) {
+            sendPasswordResetEmail(auth, email).then(() => {
+                // Send a success response
+                res.status(200).send({
+                    message: RES_MESSAGES.RESET_PASSWORD,
+                    data: "",
+                });
+            }).catch((e) => {
+                console.log("errer - ", e.code);
+
+                if (e.code) {
+                    return firebaseAuthErrorHandler(error.code, res);
+                }
+            })
+        } else {
+            res.status(500).send({
+                message: "Email is invalid",
                 data: "",
             });
-        }).catch((e) => {
-            if (e.code) {
-                return firebaseAuthErrorHandler(error.code, res);
-            }
-        })
+        }
+
 
 
     } catch (error) {
-        console.error("Error updating password:", error);
+        console.log("Error updating password:", error);
         // Handle Firebase authentication errors
         if (error.code) {
             return firebaseAuthErrorHandler(error.code, res);
