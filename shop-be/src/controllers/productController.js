@@ -307,7 +307,7 @@ export const getAllProductsFavourite = async (req, res) => {
 // App api
 export const getProductDetail = async (req, res) => {
     const { user_id, product_id } = req.body;
-    // console.log(id)
+    console.log(user_id)
     try {
         // Validate
         const [[existingProduct]] = await pool.query(

@@ -115,6 +115,10 @@ export const createOrder = async (req, res) => {
         }
         order.final_price = order.total_price;
 
+        // Set default shipping fee if not provided
+        if (!order.shipping_fee) {
+            order.shipping_fee = 0; 
+        }
 
         // Process voucher 
         if (order.voucher_id) {
@@ -259,6 +263,11 @@ export const createOrderWithPaypal = async (req, res) => {
             order.total_price += variant.price * variant.quantity;
         }
         order.final_price = order.total_price;
+
+        // Set default shipping fee if not provided
+        if (!order.shipping_fee) {
+            order.shipping_fee = 0; 
+        }
 
         // Process voucher 
         if (order.voucher_id) {
