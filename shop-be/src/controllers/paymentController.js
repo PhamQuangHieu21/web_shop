@@ -31,7 +31,7 @@ export const handlePaypalPaymentSuccess = async (req, res) => {
         if (captureResult.status === 200) {
             await pool.query(
                 `UPDATE \`order\` SET status = ?, modified_date = NOW() WHERE order_id = ?`,
-                [ORDER_STATUS.COMPLETED, orderId]
+                [ORDER_STATUS.PENDING, orderId]
             );
         }
 

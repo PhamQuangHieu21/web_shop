@@ -72,7 +72,7 @@ export const login = async (req, res) => {
     try {
         // Validate
         const [existingUser] = await pool.query(
-            "SELECT * FROM `user` WHERE email = ?",
+            "SELECT * FROM `user` WHERE email = ? and role = 'user'",
             [user.email]
         );
         if (existingUser.length === 0) {
@@ -213,6 +213,56 @@ export const updatedPassword = async (req, res) => {
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+}
+
+export const adminLogin = async (req, res) => {
+    const user = req.body;
+    try {
+        // Validate
+        const [existingUser] = await pool.query(
+            "SELECT * FROM `user` WHERE email = ? AND role = 'admin'",
+            [user.email]
+        );
+        if (existingUser.length === 0) {
+            return res.status(401).send({
+                message: RES_MESSAGES.WRONG_USERNAME_PASSWORD,
+                data: "",
+            });
+        }
+
+        // Login
+        await signInWithEmailAndPassword(auth, user.email, user.password);
+
+        // Sync password to DB each time user logs in
+        const hashedPassword = await bcrypt.hash(user.password, 12);
+        await pool.query(
+            "UPDATE `user` SET password = ? WHERE email = ?",
+            [hashedPassword, user.email]
+        );
+
+        if (auth.currentUser && auth.currentUser.emailVerified) {
+            // Save device token for firebase notification
+            // await pool.query(
+            //     `INSERT INTO user (user_id, token)
+            //         VALUES (?, ?)
+            //         ON DUPLICATE KEY UPDATE token = ?, created_date = CURRENT_TIMESTAMP`,
+            //     [existingUser[0].user_id, user.token, user.token]
+            // );
+
+            delete existingUser[0].password;
+            res.status(200).json({
+                message: RES_MESSAGES.USER_LOGIN_SUCCESS,
+                data: existingUser[0],
+            });
+        }
+        else res.status(401).send({
+            message: RES_MESSAGES.UNVERIFIED_ACCOUNT,
+            data: "",
+        });
+    } catch (error) {
+        console.log("userController::login => error: " + error);
+        firebaseAuthErrorHandler(error.code, res);
+    }
 }
 
 export const resetPassword = async (req, res) => {

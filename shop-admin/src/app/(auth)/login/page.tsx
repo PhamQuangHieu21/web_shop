@@ -49,7 +49,7 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     setLoading(true);
     try {
-      const res = await apiRequest<User>("/user/login", "POST", values);
+      const res = await apiRequest<User>("/user/adminlogin", "POST", values);
       if (res.status === 200) {
         localStorage.setItem("user_info", JSON.stringify(res.data));
         toast.success(res.message);
@@ -110,12 +110,7 @@ export default function LoginPage() {
                     </Button>
                   </form>
                 </Form>
-                <div className="mt-4 text-center text-sm">
-                  Chưa có tài khoản?{" "}
-                  <Link href="/signup" className="underline underline-offset-4">
-                    Đăng ký
-                  </Link>
-                </div>
+                
               </CardContent>
             </Card>
           </div>
